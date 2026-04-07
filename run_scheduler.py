@@ -223,6 +223,7 @@ def run_scraper(target_url):
     result = subprocess.run(
         [str(venv_python), str(scraper),
          "--url", target_url,
+         "--headless",
          "--limit", str(limit),
          "--export", "json"],
         capture_output=True, text=True,
@@ -269,11 +270,16 @@ def pick_next_target():
     c.execute("SELECT target_url FROM scrape_log WHERE started_at > datetime('now', '-6 hours')")
     recent = {r[0] for r in c.fetchall()}
 
-    placeholders = ','.join(['?'] * len(recent)) if recent else "'__none__'"
-    c.execute(f"""SELECT target_url, target_name FROM targets
-                 WHERE target_url NOT IN ({placeholders})
-                 ORDER BY COALESCE(last_scraped, '1970-01-01') ASC
-                 LIMIT 5""", list(recent))
+    if recent:
+        placeholders = ','.join(['?'] * len(recent))
+        c.execute(f"""SELECT target_url, target_name FROM targets
+                     WHERE target_url NOT IN ({placeholders})
+                     ORDER BY COALESCE(last_scraped, '1970-01-01') ASC
+                     LIMIT 5""", list(recent))
+    else:
+        c.execute("""SELECT target_url, target_name FROM targets
+                     ORDER BY COALESCE(last_scraped, '1970-01-01') ASC
+                     LIMIT 5""")
     candidates = c.fetchall()
     conn.close()
 
