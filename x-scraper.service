@@ -1,0 +1,15 @@
+[Unit]
+Description=X (Twitter) Scraper Daemon
+After=network-online.target
+
+[Service]
+Type=simple
+User=tk578
+WorkingDirectory=/home/tk578/.openclaw/workspace/x-scraper
+ExecStart=/home/tk578/.openclaw/workspace/x-scraper/venv/bin/python3 /home/tk578/.openclaw/workspace/x-scraper/run_scheduler.py --daemon
+Restart=always
+RestartSec=120
+Environment=DISPLAY=:0
+
+[Install]
+WantedBy=default.target

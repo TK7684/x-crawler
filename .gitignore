@@ -1,0 +1,10 @@
+__pycache__/
+venv/
+data/
+*.pyc
+session.json
+x_scraper.db
+scheduler.log
+*.png
+*.html
+_tmp_urls.json
