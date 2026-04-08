@@ -85,6 +85,7 @@ def init_db():
             author TEXT DEFAULT '',
             author_handle TEXT DEFAULT '',
             text TEXT DEFAULT '',
+            timestamp TEXT DEFAULT '',
             scraped_at TEXT,
             FOREIGN KEY (post_id) REFERENCES posts(post_id)
         );
@@ -195,9 +196,9 @@ def save_posts(target_url, posts):
 
         for reply in post.get("comments", []):
             new_replies += 1
-            c.execute("INSERT INTO tweet_replies (post_id, target_url, author, author_handle, text, scraped_at) VALUES (?, ?, ?, ?, ?, ?)",
+            c.execute("INSERT INTO tweet_replies (post_id, target_url, author, author_handle, text, timestamp, scraped_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
                       (pid, target_url, reply.get("author", ""), reply.get("author_handle", ""),
-                       reply.get("text", ""), post.get("scraped_at", "")))
+                       reply.get("text", ""), reply.get("timestamp", ""), post.get("scraped_at", "")))
 
     # Update target stats
     now = datetime.now().isoformat()
@@ -225,7 +226,7 @@ def run_scraper(target_url):
          "--url", target_url,
          "--headless",
          "--limit", str(limit),
-         "--export", "json"],
+         "--replies", "--images", "--export", "json"],
         capture_output=True, text=True,
         timeout=900, cwd=str(BASE_DIR),
     )

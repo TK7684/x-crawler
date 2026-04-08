@@ -18,6 +18,8 @@ import random
 import re
 import subprocess
 import sys
+import tempfile
+import urllib.request
 from datetime import datetime
 from pathlib import Path
 
@@ -238,7 +240,7 @@ async def do_login(page):
 
 # ── Scraping ────────────────────────────────────────────────────────
 
-async def scrape_target(page, target_url, limit=50, do_replies=False, do_images=False):
+async def scrape_target(page, target_url, limit=50, do_replies=True, do_images=True):
     """Scrape posts from a profile, list, or search page."""
     print(f"\n📡 Navigating to: {target_url}")
     await page.goto(target_url)
@@ -308,10 +310,14 @@ async def scrape_target(page, target_url, limit=50, do_replies=False, do_images=
 
             # ── Timestamp ──
             timestamp = ""
+            timestamp_raw = ""
             try:
                 time_el = await article.query_selector('time')
                 if time_el:
-                    timestamp = await safe_attr(time_el, "datetime") or await safe_text(time_el)
+                    timestamp = await safe_attr(time_el, "datetime") or ""
+                    timestamp_raw = await safe_text(time_el) or ""
+                    if not timestamp:
+                        timestamp = timestamp_raw
             except:
                 pass
 
@@ -394,10 +400,13 @@ async def scrape_target(page, target_url, limit=50, do_replies=False, do_images=
             except:
                 pass
 
-            # ── Image content analysis ──
+            # ── Image content analysis (inline OCR) ──
             image_content = []
             if do_images and image_urls:
-                image_content = analyze_image_urls(image_urls[:4])
+                for img_url in image_urls[:3]:
+                    result = analyze_single_x_image(img_url)
+                    if result:
+                        image_content.append(result)
 
             # ── Replies (if requested, open tweet page) ──
             comments = []
@@ -411,6 +420,7 @@ async def scrape_target(page, target_url, limit=50, do_replies=False, do_images=
                 "author_handle": author_handle,
                 "text": text,
                 "timestamp": timestamp,
+                "timestamp_raw": timestamp_raw,
                 "replies": replies,
                 "reposts": reposts,
                 "likes": likes,
@@ -476,11 +486,19 @@ async def scrape_replies(page, tweet_url, max_replies=30):
                 tweet_el = await article.query_selector('[data-testid="tweetText"]')
                 text = await safe_text(tweet_el) if tweet_el else ""
 
+                reply_time = ""
+                try:
+                    time_el = await article.query_selector('time')
+                    if time_el:
+                        reply_time = await safe_attr(time_el, "datetime") or await safe_text(time_el) or ""
+                except:
+                    pass
                 if text:
                     replies.append({
                         "author": author,
                         "author_handle": handle,
                         "text": text,
+                        "timestamp": reply_time,
                     })
             except:
                 continue
@@ -491,22 +509,51 @@ async def scrape_replies(page, tweet_url, max_replies=30):
 
 # ── Vision Analysis ─────────────────────────────────────────────────
 
-def analyze_image_urls(urls):
-    analyzer = Path(__file__).parent / "vision_analyze.py"
-    if not analyzer.exists():
-        return ["[analyzer not found]"]
+def download_x_file(url, timeout=15):
     try:
-        tmp = DATA_DIR / "_tmp_urls.json"
-        tmp.write_text(json.dumps(urls))
-        result = subprocess.run(
-            [sys.executable, str(analyzer), str(tmp)],
-            capture_output=True, text=True, timeout=120,
-        )
-        if result.returncode == 0:
-            return json.loads(result.stdout.strip())
-        return [f"[error: {result.stderr[:200]}]"]
+        req = urllib.request.Request(url, headers={
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+        })
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            ct = resp.headers.get("Content-Type", "")
+            ext = "jpg"
+            if "png" in ct: ext = "png"
+            elif "gif" in ct: ext = "gif"
+            elif "webp" in ct: ext = "webp"
+            elif "mp4" in ct: ext = "mp4"
+            f = tempfile.NamedTemporaryFile(suffix=f".{ext}", delete=False)
+            f.write(resp.read())
+            f.close()
+            return f.name
+    except:
+        return None
+
+
+def analyze_single_x_image(url):
+    path = download_x_file(url)
+    if not path:
+        return f"[download failed]"
+    try:
+        import pytesseract
+        from PIL import Image
+        img = Image.open(path)
+        text = pytesseract.image_to_string(img, lang='tha+eng').strip()
+        if text:
+            return f"OCR: {text[:300]}"
+        return "[image: no text detected]"
     except Exception as e:
-        return [f"[error: {e}]"]
+        return f"[OCR error: {str(e)[:60]}]"
+    finally:
+        try: Path(path).unlink()
+        except: pass
+
+
+def analyze_image_urls(urls):
+    """Fallback: use external vision_analyze.py if it exists."""
+    results = []
+    for url in urls[:3]:
+        results.append(analyze_single_x_image(url))
+    return [r for r in results if r]
 
 
 # ── Export ──────────────────────────────────────────────────────────
