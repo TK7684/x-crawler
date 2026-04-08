@@ -31,12 +31,12 @@ DATA_DIR = BASE_DIR / "data"
 DB_FILE = BASE_DIR / "x_scraper.db"
 LOG_FILE = BASE_DIR / "scheduler.log"
 
-MAX_SCRAPES_PER_DAY = 8
-MIN_INTERVAL_MIN = 30
-MAX_INTERVAL_MIN = 180
+MAX_SCRAPES_PER_DAY = 24
+MIN_INTERVAL_MIN = 15
+MAX_INTERVAL_MIN = 90
 BREAK_EVERY_N = 3
-BREAK_MIN_MIN = 60
-BREAK_MAX_MIN = 180
+BREAK_MIN_MIN = 20
+BREAK_MAX_MIN = 60
 QUIET_START = 2
 QUIET_END = 5
 
@@ -217,7 +217,7 @@ def save_posts(target_url, posts):
 def run_scraper(target_url):
     venv_python = BASE_DIR / "venv" / "bin" / "python3"
     scraper = BASE_DIR / "scraper.py"
-    limit = random.randint(20, 60)
+    limit = random.randint(40, 100)
 
     log(f"  🔧 Scraping {limit} posts...")
 
