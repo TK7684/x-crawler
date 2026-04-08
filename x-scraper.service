@@ -1,0 +1,15 @@
+[Unit]
+Description=X Scraper Daemon
+After=network-online.target
+
+[Service]
+Type=simple
+User=ec2-user
+WorkingDirectory=/home/ec2-user/x-scraper
+Environment=DISPLAY=:99
+ExecStart=/home/ec2-user/x-scraper/venv/bin/python3 -u /home/ec2-user/x-scraper/run_scheduler.py --daemon
+Restart=on-failure
+RestartSec=30
+
+[Install]
+WantedBy=default.target

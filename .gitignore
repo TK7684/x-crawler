@@ -1,0 +1,9 @@
+venv/
+__pycache__/
+*.pyc
+session.json
+scheduler.log
+cron.log
+*.png
+*.html
+_tmp_urls.json
