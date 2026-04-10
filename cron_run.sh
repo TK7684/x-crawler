@@ -28,7 +28,7 @@ TOTAL_REPLIES=$(echo "$DB_STATS" | sed -n '2p')
 TOTAL_RUNS=$(echo "$DB_STATS" | sed -n '3p')
 
 # Send Discord notification
-python3 /home/tk578/.openclaw/workspace/scripts/discord_notify.py "facebook-group-scrape" "🐦 **X Scraper Update**
+python3 /home/tk578/.openclaw/workspace/scripts/discord_notify.py "crawler" "🐦 **X Scraper Update**
 ${STATUS}
 **Scraped:** @${TARGET} — ${POSTS_NEW} new posts, ${REPLIES} replies
 **Database:** ${TOTAL_POSTS} posts, ${TOTAL_REPLIES} replies total

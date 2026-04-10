@@ -240,8 +240,9 @@ async def do_login(page):
 
 # ── Scraping ────────────────────────────────────────────────────────
 
-async def scrape_target(page, target_url, limit=50, do_replies=True, do_images=True):
-    """Scrape posts from a profile, list, or search page."""
+async def scrape_target(page, target_url, limit=50, do_replies=True, do_images=True, known_ids=None):
+    """Scrape posts from a profile, list, or search page.
+    If known_ids is provided, stops early after consecutive known posts."""
     print(f"\n📡 Navigating to: {target_url}")
     await page.goto(target_url)
     await random_delay(4, 7)
@@ -252,11 +253,13 @@ async def scrape_target(page, target_url, limit=50, do_replies=True, do_images=T
         print("⚠️ Posts didn't load — check URL or login")
         return []
 
+    known_ids = known_ids or set()
     posts = []
     seen_ids = set()
     stale = 0
+    consecutive_known = 0
 
-    print(f"🎯 Target: {limit} posts\n")
+    print(f"🎯 Target: {limit} posts ({len(known_ids)} already known)\n")
 
     while len(posts) < limit:
         articles = await page.query_selector_all('article')
@@ -287,6 +290,15 @@ async def scrape_target(page, target_url, limit=50, do_replies=True, do_images=T
                 continue
 
             seen_ids.add(tweet_id)
+
+            # Early exit on consecutive known posts
+            if tweet_id in known_ids:
+                consecutive_known += 1
+                if consecutive_known >= 10:
+                    print(f"\n⏩ 10 consecutive known tweets — stopping early ({len(posts)} new collected)")
+                    return posts
+                continue
+            consecutive_known = 0
             new += 1
 
             # ── Author ──
@@ -558,7 +570,10 @@ def analyze_image_urls(urls):
 
 # ── Export ──────────────────────────────────────────────────────────
 
-def export_data(posts, target_name, target_dir):
+def export_data(posts, target_name, target_dir, skip_if_empty=True):
+    if skip_if_empty and not posts:
+        print("📁 No new posts — skipping export")
+        return
     ts = datetime.now().strftime("%Y%m%d_%H%M%S")
     target_dir.mkdir(parents=True, exist_ok=True)
 
@@ -621,6 +636,7 @@ async def main():
     parser.add_argument("--limit", type=int, default=50)
     parser.add_argument("--replies", action="store_true", help="Scrape replies on each post")
     parser.add_argument("--images", action="store_true", help="Analyze images")
+    parser.add_argument("--known-ids-file", type=str, help="JSON file with known tweet IDs to skip")
     parser.add_argument("--export", choices=["json", "markdown", "both"], default="both")
     args = parser.parse_args()
 
@@ -639,8 +655,18 @@ async def main():
             print("   python scraper.py --url 'https://x.com/i/lists/123456' --replies --images --limit 30")
             return
 
+        # Load known IDs for incremental scraping
+        known_ids = set()
+        if args.known_ids_file:
+            try:
+                known_ids = set(json.loads(Path(args.known_ids_file).read_text()))
+                print(f"📋 Loaded {len(known_ids)} known tweet IDs (incremental mode)")
+            except Exception as e:
+                print(f"⚠️ Could not load known IDs: {e}")
+
         posts = await scrape_target(page, args.url, limit=args.limit,
-                                     do_replies=args.replies, do_images=args.images)
+                                     do_replies=args.replies, do_images=args.images,
+                                     known_ids=known_ids)
 
         if posts:
             # Extract target name from URL

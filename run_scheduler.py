@@ -98,13 +98,31 @@ def init_db():
             posts_new INTEGER DEFAULT 0,
             posts_total INTEGER DEFAULT 0,
             replies_new INTEGER DEFAULT 0,
+            posts_skipped INTEGER DEFAULT 0,
             status TEXT DEFAULT 'success',
             error TEXT DEFAULT ''
         );
     """)
+    # Migrate: add columns if missing
+    for col in [("posts", "reply_count INTEGER DEFAULT 0"),
+                ("posts", "last_deep_scraped TEXT"),
+                ("scrape_log", "posts_skipped INTEGER DEFAULT 0")]:
+        try:
+            c.execute(f"ALTER TABLE {col[0]} ADD COLUMN {col[1]}")
+        except sqlite3.OperationalError:
+            pass
     conn.commit()
     conn.close()
     log("Database initialized")
+
+
+def get_known_post_ids(target_url):
+    conn = sqlite3.connect(str(DB_FILE))
+    c = conn.cursor()
+    c.execute("SELECT post_id FROM posts WHERE target_url = ?", (target_url,))
+    ids = {r[0] for r in c.fetchall()}
+    conn.close()
+    return ids
 
 
 def add_target(url, name="", target_type="profile"):
@@ -154,12 +172,12 @@ def log(msg):
         f.write(line + "\n")
 
 
-def log_scrape(target_url, started, new_p, total_p, new_r, status="success", error=""):
+def log_scrape(target_url, started, new_p, total_p, new_r, status="success", error="", posts_skipped=0):
     conn = sqlite3.connect(str(DB_FILE))
     c = conn.cursor()
-    c.execute("""INSERT INTO scrape_log (target_url, started_at, finished_at, posts_new, posts_total, replies_new, status, error)
-                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
-              (target_url, started, datetime.now().isoformat(), new_p, total_p, new_r, status, error))
+    c.execute("""INSERT INTO scrape_log (target_url, started_at, finished_at, posts_new, posts_total, replies_new, posts_skipped, status, error)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+              (target_url, started, datetime.now().isoformat(), new_p, total_p, new_r, posts_skipped, status, error))
     conn.commit()
     conn.close()
 
@@ -167,6 +185,7 @@ def log_scrape(target_url, started, new_p, total_p, new_r, status="success", err
 # ── Save to DB ──────────────────────────────────────────────────────
 
 def save_posts(target_url, posts):
+    """Save posts with deduplication. Returns (new_posts, new_replies, skipped)."""
     conn = sqlite3.connect(str(DB_FILE))
     c = conn.cursor()
 
@@ -176,32 +195,56 @@ def save_posts(target_url, posts):
 
     new_posts = 0
     new_replies = 0
+    skipped = 0
+    now = datetime.now().isoformat()
 
     for post in posts:
         pid = post.get("id", "")
-        if not pid or pid in known:
+        if not pid:
             continue
 
+        replies = post.get("comments", [])
+        reply_count = len(replies)
+
+        if pid in known:
+            # Existing post: only add new replies
+            if replies:
+                for reply in replies:
+                    c.execute("""SELECT COUNT(*) FROM tweet_replies
+                                 WHERE post_id = ? AND author_handle = ? AND substr(text, 1, 100) = substr(?, 1, 100)""",
+                              (pid, reply.get("author_handle", ""), reply.get("text", "")))
+                    if c.fetchone()[0] == 0:
+                        new_replies += 1
+                        c.execute("INSERT INTO tweet_replies (post_id, target_url, author, author_handle, text, timestamp, scraped_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                                  (pid, target_url, reply.get("author", ""), reply.get("author_handle", ""),
+                                   reply.get("text", ""), reply.get("timestamp", ""), now))
+                c.execute("UPDATE posts SET reply_count = ?, last_deep_scraped = ?, replies = ?, reposts = ?, likes = ? WHERE post_id = ?",
+                          (reply_count, now, post.get("replies", 0), post.get("reposts", 0), post.get("likes", 0), pid))
+            skipped += 1
+            continue
+
+        # New post
         new_posts += 1
         c.execute("""
             INSERT OR REPLACE INTO posts
             (post_id, target_url, post_url, author, author_handle, text, timestamp,
-             replies, reposts, likes, image_urls, video_url, image_content, scraped_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+             replies, reposts, likes, image_urls, video_url, image_content, scraped_at,
+             reply_count, last_deep_scraped)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (pid, target_url, post.get("url", ""), post.get("author", ""),
               post.get("author_handle", ""), post.get("text", ""), post.get("timestamp", ""),
               post.get("replies", 0), post.get("reposts", 0), post.get("likes", 0),
               json.dumps(post.get("image_urls", [])), post.get("video_url", ""),
-              json.dumps(post.get("image_content", [])), post.get("scraped_at", "")))
+              json.dumps(post.get("image_content", [])), now,
+              reply_count, now if replies else None))
 
-        for reply in post.get("comments", []):
+        for reply in replies:
             new_replies += 1
             c.execute("INSERT INTO tweet_replies (post_id, target_url, author, author_handle, text, timestamp, scraped_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
                       (pid, target_url, reply.get("author", ""), reply.get("author_handle", ""),
-                       reply.get("text", ""), reply.get("timestamp", ""), post.get("scraped_at", "")))
+                       reply.get("text", ""), reply.get("timestamp", ""), now))
 
     # Update target stats
-    now = datetime.now().isoformat()
     c.execute("""UPDATE targets SET last_scraped = ?,
                 total_posts = (SELECT COUNT(*) FROM posts WHERE target_url = ?),
                 total_replies = (SELECT COUNT(*) FROM tweet_replies WHERE target_url = ?)
@@ -209,27 +252,41 @@ def save_posts(target_url, posts):
 
     conn.commit()
     conn.close()
-    return new_posts, new_replies
+    return new_posts, new_replies, skipped
 
 
 # ── Runner ──────────────────────────────────────────────────────────
 
 def run_scraper(target_url):
+    import tempfile
+
     venv_python = BASE_DIR / "venv" / "bin" / "python3"
     scraper = BASE_DIR / "scraper.py"
     limit = random.randint(20, 60)
 
-    log(f"  🔧 Scraping {limit} posts...")
+    # Pass known tweet IDs for incremental scraping
+    known = get_known_post_ids(target_url)
+    known_file = None
+    cmd = [str(venv_python), str(scraper),
+           "--url", target_url, "--headless",
+           "--limit", str(limit),
+           "--replies", "--images", "--export", "json"]
 
-    result = subprocess.run(
-        [str(venv_python), str(scraper),
-         "--url", target_url,
-         "--headless",
-         "--limit", str(limit),
-         "--replies", "--images", "--export", "json"],
-        capture_output=True, text=True,
-        timeout=900, cwd=str(BASE_DIR),
-    )
+    if known:
+        known_file = tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False, dir=str(BASE_DIR))
+        json.dump(list(known), known_file)
+        known_file.close()
+        cmd.extend(["--known-ids-file", known_file.name])
+        log(f"  🔧 Scraping {limit} posts (incremental, {len(known)} known)...")
+    else:
+        log(f"  🔧 Scraping {limit} posts (first run)...")
+
+    try:
+        result = subprocess.run(cmd, capture_output=True, text=True,
+                                timeout=900, cwd=str(BASE_DIR))
+    finally:
+        if known_file:
+            Path(known_file.name).unlink(missing_ok=True)
 
     if result.returncode != 0:
         log(f"  ❌ Error: {result.stderr[-500:]}")
@@ -243,6 +300,8 @@ def run_scraper(target_url):
 
     jf = sorted(target_dir.glob("*.json"), key=lambda p: p.stat().st_mtime, reverse=True)
     for f in jf:
+        if "_summary" in f.name:
+            continue
         try:
             data = json.load(f.open())
             if isinstance(data, list):
@@ -250,6 +309,26 @@ def run_scraper(target_url):
         except:
             continue
     return []
+
+
+def cleanup_old_exports(target_url, keep=5):
+    """Keep only the most recent N export files per target."""
+    target = target_url.rstrip("/").split("/")[-1]
+    target_dir = DATA_DIR / target
+    if not target_dir.exists():
+        return 0
+    all_files = sorted(target_dir.glob("*.json"), key=lambda p: p.stat().st_mtime, reverse=True)
+    json_files = [f for f in all_files if "_summary" not in f.name]
+    removed = 0
+    for old in json_files[keep:]:
+        stem = old.stem
+        for sibling in target_dir.glob(f"{stem}*"):
+            try:
+                sibling.unlink()
+                removed += 1
+            except:
+                pass
+    return removed
 
 
 # ── Anti-Detection ──────────────────────────────────────────────────
@@ -321,9 +400,12 @@ def scrape_one():
             log_scrape(url, started, 0, 0, 0, "no_posts")
             return True
 
-        new_p, new_r = save_posts(url, posts)
-        log(f"  ✅ {len(posts)} posts ({new_p} new), {new_r} replies")
-        log_scrape(url, started, new_p, len(posts), new_r)
+        new_p, new_r, skipped = save_posts(url, posts)
+        log(f"  ✅ {len(posts)} posts ({new_p} new, {skipped} already known), {new_r} new replies")
+        log_scrape(url, started, new_p, len(posts), new_r, posts_skipped=skipped)
+        removed = cleanup_old_exports(url, keep=5)
+        if removed:
+            log(f"  🧹 Cleaned {removed} old export files")
         return True
     except subprocess.TimeoutExpired:
         log(f"  ⏰ Timeout")
