@@ -1,0 +1,112 @@
+[
+  {
+    "id": "2043141389261639837",
+    "url": "https://x.com/NickSpisak_/status/2043141389261639837",
+    "author": "Nick Spisak",
+    "author_handle": "NickSpisak_",
+    "text": "𝕏 algo pushes ORIGINAL content now\n\nShould this work?",
+    "timestamp": "2026-04-12T01:37:21.000Z",
+    "timestamp_raw": "16h",
+    "replies": 1,
+    "reposts": 0,
+    "likes": 3,
+    "image_urls": [
+      "https://pbs.twimg.com/profile_images/1614514579098275840/6dgPShU3_normal.jpg?format=jpg&name=large",
+      "https://pbs.twimg.com/amplify_video_thumb/2043141329988046848/img/dd7lgF1m13BS_LwU.jpg?format=jpg&name=large"
+    ],
+    "video_url": "https://pbs.twimg.com/amplify_video_thumb/2043141329988046848/img/dd7lgF1m13BS_LwU.jpg",
+    "image_content": [
+      "[download failed]",
+      "[OCR error: No module named 'pytesseract']"
+    ],
+    "comments": [
+      {
+        "author": "Nick Spisak",
+        "author_handle": "NickSpisak_",
+        "text": "𝕏 algo pushes ORIGINAL content now\n\nShould this work?",
+        "timestamp": "2026-04-12T01:37:21.000Z"
+      },
+      {
+        "author": "Nick Spisak",
+        "author_handle": "NickSpisak_",
+        "text": "e𝕏periment flopped",
+        "timestamp": "2026-04-12T02:23:39.000Z"
+      },
+      {
+        "author": "Nick Spisak",
+        "author_handle": "NickSpisak_",
+        "text": "claude code just shipped /ultraplan. the speed isn't the interesting part.\n\nin under 5 minutes you'll learn:\n\n1. how 4 opus agents plan your project in parallel (3 explorers + 1 critic)\n2. why the review workflow matters more than the 4x speed boost\n3. 5 scenarios where ultraplan",
+        "timestamp": "2026-04-11T20:15:00.000Z"
+      }
+    ],
+    "scraped_at": "2026-04-12T17:47:41.224308"
+  },
+  {
+    "id": "2043153039389790506",
+    "url": "https://x.com/NickSpisak_/status/2043153039389790506",
+    "author": "Nick Spisak",
+    "author_handle": "NickSpisak_",
+    "text": "e𝕏periment flopped",
+    "timestamp": "2026-04-12T02:23:39.000Z",
+    "timestamp_raw": "15h",
+    "replies": 1,
+    "reposts": 0,
+    "likes": 5,
+    "image_urls": [
+      "https://pbs.twimg.com/profile_images/1614514579098275840/6dgPShU3_normal.jpg?format=jpg&name=large"
+    ],
+    "video_url": "",
+    "image_content": [
+      "[download failed]"
+    ],
+    "comments": [
+      {
+        "author": "Nick Spisak",
+        "author_handle": "NickSpisak_",
+        "text": "𝕏 algo pushes ORIGINAL content now\n\nShould this work?",
+        "timestamp": "2026-04-12T01:37:21.000Z"
+      },
+      {
+        "author": "Nick Spisak",
+        "author_handle": "NickSpisak_",
+        "text": "e𝕏periment flopped",
+        "timestamp": "2026-04-12T02:23:39.000Z"
+      }
+    ],
+    "scraped_at": "2026-04-12T17:47:56.824711"
+  },
+  {
+    "id": "2043322261499695518",
+    "url": "https://x.com/coreyganim/status/2043322261499695518",
+    "author": "Corey Ganim",
+    "author_handle": "coreyganim",
+    "text": "",
+    "timestamp": "2026-04-12T13:36:04.000Z",
+    "timestamp_raw": "4h",
+    "replies": 0,
+    "reposts": 0,
+    "likes": 0,
+    "image_urls": [
+      "https://pbs.twimg.com/profile_images/1991521820084695042/eTKoUALv_normal.jpg?format=jpg&name=large"
+    ],
+    "video_url": "",
+    "image_content": [
+      "[download failed]"
+    ],
+    "comments": [
+      {
+        "author": "Nick Spisak",
+        "author_handle": "NickSpisak_",
+        "text": "𝕏 algo pushes ORIGINAL content now\n\nShould this work?",
+        "timestamp": "2026-04-12T01:37:21.000Z"
+      },
+      {
+        "author": "Nick Spisak",
+        "author_handle": "NickSpisak_",
+        "text": "e𝕏periment flopped",
+        "timestamp": "2026-04-12T02:23:39.000Z"
+      }
+    ],
+    "scraped_at": "2026-04-12T17:48:12.699543"
+  }
+]
