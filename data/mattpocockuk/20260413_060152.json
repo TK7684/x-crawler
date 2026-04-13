@@ -1,0 +1,370 @@
+[
+  {
+    "id": "2043320548776681627",
+    "url": "https://x.com/mattpocockuk/status/2043320548776681627",
+    "author": "Matt Pocock",
+    "author_handle": "mattpocockuk",
+    "text": "Want to put something in CLAUDE.md?\n\nStick it in CODE_STANDARDS.md instead.\n\nThen pass it to a reviewer agent that runs on every PR.\n\nSave tokens during implementation, spend them during review.",
+    "timestamp": "2026-04-12T13:29:16.000Z",
+    "timestamp_raw": "16h",
+    "replies": 38,
+    "reposts": 32,
+    "likes": 750,
+    "image_urls": [
+      "https://pbs.twimg.com/profile_images/1666460461884211204/SmBm505D_normal.jpg?format=jpg&name=large"
+    ],
+    "video_url": "",
+    "image_content": [
+      "[download failed]"
+    ],
+    "comments": [
+      {
+        "author": "Matt Pocock",
+        "author_handle": "mattpocockuk",
+        "text": "Want to put something in CLAUDE.md?\n\nStick it in CODE_STANDARDS.md instead.\n\nThen pass it to a reviewer agent that runs on every PR.\n\nSave tokens during implementation, spend them during review.",
+        "timestamp": "2026-04-12T13:29:16.000Z"
+      },
+      {
+        "author": "Matt Pocock",
+        "author_handle": "mattpocockuk",
+        "text": "If you didn't notice, this is red green refactor split across 2 coding agent sessions.",
+        "timestamp": "2026-04-12T14:46:24.000Z"
+      },
+      {
+        "author": "Victor Chan",
+        "author_handle": "victor36max_",
+        "text": "I agree. I've found that agents are better at spotting anti-patterns than at following patterns.\n\nBut at the end of the day, static analysis is the most reliable",
+        "timestamp": "2026-04-12T15:07:44.000Z"
+      },
+      {
+        "author": "Matt Pocock",
+        "author_handle": "mattpocockuk",
+        "text": "Yeah this is all assuming you have static analysis maxed out",
+        "timestamp": "2026-04-12T15:08:42.000Z"
+      },
+      {
+        "author": "Grok",
+        "author_handle": "grok",
+        "text": "Introducing the fastest video and image generation experience. Try SuperGrok today.",
+        "timestamp": ""
+      },
+      {
+        "author": "Luong NGUYEN",
+        "author_handle": "luongnv89",
+        "text": "or u can create a code-review skill, put this standard in skill reference\n\nthis will only be used when you use this code-review skill",
+        "timestamp": "2026-04-12T15:14:01.000Z"
+      },
+      {
+        "author": "Matt Pocock",
+        "author_handle": "mattpocockuk",
+        "text": "Best to be explicit and push the skill's contents to the reviewer, to lower the variance",
+        "timestamp": "2026-04-12T15:14:39.000Z"
+      },
+      {
+        "author": "Chen Avnery",
+        "author_handle": "MindTheGapMTG",
+        "text": "This works for style rules. Not for architecture constraints. If an agent starts building the wrong abstraction, review catches it after the damage is done. We run 6 agents daily - the expensive lesson is knowing which rules prevent wasted work vs which ones polish it.",
+        "timestamp": "2026-04-12T14:07:09.000Z"
+      },
+      {
+        "author": "Matt Pocock",
+        "author_handle": "mattpocockuk",
+        "text": "Architectural awareness should be a critical part of planning, and that should feed in to the implementation. Code style/framework usage optimisation stuff should be left to the reviewer",
+        "timestamp": "2026-04-12T14:45:50.000Z"
+      },
+      {
+        "author": "@as_Crazy",
+        "author_handle": "as_Crazy",
+        "text": "It feels like having agent implement thing without guidance and then having another one trying to make it comply with the standards is going to result in not the best outcomes. I'd want agent to properly design the thing around the standards in the first place.",
+        "timestamp": "2026-04-12T13:40:11.000Z"
+      },
+      {
+        "author": "Matt Pocock",
+        "author_handle": "mattpocockuk",
+        "text": "Of course you have guidance, you put the critical stuff in the implementation plan",
+        "timestamp": "2026-04-12T14:44:25.000Z"
+      },
+      {
+        "author": "null OR '1'='1'; DROP TABLE users; --",
+        "author_handle": "loycense",
+        "text": "Then it will have to refactor every pr, parsing every file, I feel like that’s a lot more tokens than using a few just instructing it to do it right the first time. And Claude.md only loads at the beginning of session",
+        "timestamp": "2026-04-12T14:28:28.000Z"
+      },
+      {
+        "author": "Matt Pocock",
+        "author_handle": "mattpocockuk",
+        "text": "You might have a serious misapprehension about token economics in agent conversations",
+        "timestamp": "2026-04-12T14:52:31.000Z"
+      },
+      {
+        "author": "Tom Maiaroto",
+        "author_handle": "tmaiaroto",
+        "text": "And watch those pull requests pile up and take a long time for things to run too, right? Actually, seriously. What are you using for reviews and how long are they taking? I love code rabbit, but he's a slow rabbit.",
+        "timestamp": "2026-04-12T17:03:41.000Z"
+      },
+      {
+        "author": "Matt Pocock",
+        "author_handle": "mattpocockuk",
+        "text": "I just run a reviewer as part of my Ralph loops",
+        "timestamp": "2026-04-12T17:04:17.000Z"
+      },
+      {
+        "author": "Anoy",
+        "author_handle": "Anoyroyc",
+        "text": "never thought about flipping it like that but makes way more sense to burn tokens on review than every single code gen",
+        "timestamp": "2026-04-12T16:47:00.000Z"
+      },
+      {
+        "author": "Matt Pocock",
+        "author_handle": "mattpocockuk",
+        "text": "Make it work, then make it good",
+        "timestamp": "2026-04-12T16:47:34.000Z"
+      },
+      {
+        "author": "Yitz Willroth™",
+        "author_handle": "coderabbi",
+        "text": "Better yet, lint and programmatically fix everything that you can.",
+        "timestamp": "2026-04-12T13:56:12.000Z"
+      },
+      {
+        "author": "Matt Pocock",
+        "author_handle": "mattpocockuk",
+        "text": "Yes, this is table stakes",
+        "timestamp": "2026-04-12T14:51:22.000Z"
+      },
+      {
+        "author": "Kevin Möchel",
+        "author_handle": "kevin_moechel",
+        "text": "Isn't this effectively lengthening the feedback cycle?",
+        "timestamp": "2026-04-12T16:41:00.000Z"
+      },
+      {
+        "author": "Matt Pocock",
+        "author_handle": "mattpocockuk",
+        "text": "My current thinking is that you always need a review agent. The quality jump I've seen has been astounding even without properly optimising it. \n\nSo this is me starting to optimise it.",
+        "timestamp": "2026-04-12T16:42:02.000Z"
+      },
+      {
+        "author": "Rob Richardson",
+        "author_handle": "robrichardson_",
+        "text": "I've gone back and forth on this. The problem I keep running into is that implementation-time constraints are cheaper to enforce than post-hoc review. If the agent doesn't know the constraint exists, it has to undo and redo work. That said, keeping CLAUDE.md lean is a real goal.",
+        "timestamp": "2026-04-12T14:59:39.000Z"
+      },
+      {
+        "author": "Teuta",
+        "author_handle": "TeutaAi",
+        "text": "Running a reviewer agent on both CLAUDE.md and CODE_STANDARDS.md last month, the surprise was how much token budget I saved by letting review time handle the doc sync—made reviewers actually read the rules instead of patching mid-edit.",
+        "timestamp": "2026-04-12T17:42:02.000Z"
+      },
+      {
+        "author": "Rob Richardson",
+        "author_handle": "robrichardson_",
+        "text": "I've gone back and forth on this. The problem I keep running into is that implementation-time constraints are cheaper to enforce than post-hoc review. If the agent doesn't know the constraint exists, it has to undo and redo work. That said, keeping CLAUDE.md lean is a real goal.",
+        "timestamp": "2026-04-12T14:59:55.000Z"
+      }
+    ],
+    "scraped_at": "2026-04-13T06:00:26.636429"
+  },
+  {
+    "id": "2043339958035845553",
+    "url": "https://x.com/mattpocockuk/status/2043339958035845553",
+    "author": "Matt Pocock",
+    "author_handle": "mattpocockuk",
+    "text": "If you didn't notice, this is red green refactor split across 2 coding agent sessions.",
+    "timestamp": "2026-04-12T14:46:24.000Z",
+    "timestamp_raw": "15h",
+    "replies": 1,
+    "reposts": 1,
+    "likes": 25,
+    "image_urls": [
+      "https://pbs.twimg.com/profile_images/1666460461884211204/SmBm505D_normal.jpg?format=jpg&name=large"
+    ],
+    "video_url": "",
+    "image_content": [
+      "[download failed]"
+    ],
+    "comments": [
+      {
+        "author": "Matt Pocock",
+        "author_handle": "mattpocockuk",
+        "text": "Want to put something in CLAUDE.md?\n\nStick it in CODE_STANDARDS.md instead.\n\nThen pass it to a reviewer agent that runs on every PR.\n\nSave tokens during implementation, spend them during review.",
+        "timestamp": "2026-04-12T13:29:16.000Z"
+      },
+      {
+        "author": "Matt Pocock",
+        "author_handle": "mattpocockuk",
+        "text": "If you didn't notice, this is red green refactor split across 2 coding agent sessions.",
+        "timestamp": "2026-04-12T14:46:24.000Z"
+      },
+      {
+        "author": "Jose Vidal",
+        "author_handle": "jovid78",
+        "text": "I understand its common to have a Review agent.. however my first reaction/thought on that is that you end up spending tokens in getting a sub par-implementation then tokens on the review then tokens on the fix? \nBut I guess its just the nature of the beast ?",
+        "timestamp": "2026-04-12T14:59:39.000Z"
+      },
+      {
+        "author": "Matt Pocock",
+        "author_handle": "mattpocockuk",
+        "text": "Make it work, then make it good",
+        "timestamp": "2026-04-12T15:03:06.000Z"
+      }
+    ],
+    "scraped_at": "2026-04-13T06:00:43.725193"
+  },
+  {
+    "id": "2043343295879737418",
+    "url": "https://x.com/jovid78/status/2043343295879737418",
+    "author": "Jose Vidal",
+    "author_handle": "jovid78",
+    "text": "I understand its common to have a Review agent.. however my first reaction/thought on that is that you end up spending tokens in getting a sub par-implementation then tokens on the review then tokens on the fix? \nBut I guess its just the nature of the beast ?",
+    "timestamp": "2026-04-12T14:59:39.000Z",
+    "timestamp_raw": "15h",
+    "replies": 1,
+    "reposts": 0,
+    "likes": 0,
+    "image_urls": [
+      "https://pbs.twimg.com/profile_images/1989491430574977024/epWpw28j_normal.jpg?format=jpg&name=large"
+    ],
+    "video_url": "",
+    "image_content": [
+      "[download failed]"
+    ],
+    "comments": [
+      {
+        "author": "Matt Pocock",
+        "author_handle": "mattpocockuk",
+        "text": "Want to put something in CLAUDE.md?\n\nStick it in CODE_STANDARDS.md instead.\n\nThen pass it to a reviewer agent that runs on every PR.\n\nSave tokens during implementation, spend them during review.",
+        "timestamp": "2026-04-12T13:29:16.000Z"
+      },
+      {
+        "author": "Matt Pocock",
+        "author_handle": "mattpocockuk",
+        "text": "If you didn't notice, this is red green refactor split across 2 coding agent sessions.",
+        "timestamp": "2026-04-12T14:46:24.000Z"
+      },
+      {
+        "author": "Jose Vidal",
+        "author_handle": "jovid78",
+        "text": "I understand its common to have a Review agent.. however my first reaction/thought on that is that you end up spending tokens in getting a sub par-implementation then tokens on the review then tokens on the fix? \nBut I guess its just the nature of the beast ?",
+        "timestamp": "2026-04-12T14:59:39.000Z"
+      },
+      {
+        "author": "Matt Pocock",
+        "author_handle": "mattpocockuk",
+        "text": "Make it work, then make it good",
+        "timestamp": "2026-04-12T15:03:06.000Z"
+      },
+      {
+        "author": "Jose Vidal",
+        "author_handle": "jovid78",
+        "text": "Guess that makes sense",
+        "timestamp": "2026-04-12T22:35:51.000Z"
+      }
+    ],
+    "scraped_at": "2026-04-13T06:00:59.904358"
+  },
+  {
+    "id": "2043344164176220495",
+    "url": "https://x.com/mattpocockuk/status/2043344164176220495",
+    "author": "Matt Pocock",
+    "author_handle": "mattpocockuk",
+    "text": "Make it work, then make it good",
+    "timestamp": "2026-04-12T15:03:06.000Z",
+    "timestamp_raw": "14h",
+    "replies": 1,
+    "reposts": 0,
+    "likes": 1,
+    "image_urls": [
+      "https://pbs.twimg.com/profile_images/1666460461884211204/SmBm505D_normal.jpg?format=jpg&name=large"
+    ],
+    "video_url": "",
+    "image_content": [
+      "[download failed]"
+    ],
+    "comments": [
+      {
+        "author": "Matt Pocock",
+        "author_handle": "mattpocockuk",
+        "text": "Want to put something in CLAUDE.md?\n\nStick it in CODE_STANDARDS.md instead.\n\nThen pass it to a reviewer agent that runs on every PR.\n\nSave tokens during implementation, spend them during review.",
+        "timestamp": "2026-04-12T13:29:16.000Z"
+      },
+      {
+        "author": "Matt Pocock",
+        "author_handle": "mattpocockuk",
+        "text": "If you didn't notice, this is red green refactor split across 2 coding agent sessions.",
+        "timestamp": "2026-04-12T14:46:24.000Z"
+      },
+      {
+        "author": "Jose Vidal",
+        "author_handle": "jovid78",
+        "text": "I understand its common to have a Review agent.. however my first reaction/thought on that is that you end up spending tokens in getting a sub par-implementation then tokens on the review then tokens on the fix? \nBut I guess its just the nature of the beast ?",
+        "timestamp": "2026-04-12T14:59:39.000Z"
+      },
+      {
+        "author": "Matt Pocock",
+        "author_handle": "mattpocockuk",
+        "text": "Make it work, then make it good",
+        "timestamp": "2026-04-12T15:03:06.000Z"
+      },
+      {
+        "author": "Jose Vidal",
+        "author_handle": "jovid78",
+        "text": "Guess that makes sense",
+        "timestamp": "2026-04-12T22:35:51.000Z"
+      }
+    ],
+    "scraped_at": "2026-04-13T06:01:15.445413"
+  },
+  {
+    "id": "2043458100569485462",
+    "url": "https://x.com/jovid78/status/2043458100569485462",
+    "author": "Jose Vidal",
+    "author_handle": "jovid78",
+    "text": "Guess that makes sense",
+    "timestamp": "2026-04-12T22:35:51.000Z",
+    "timestamp_raw": "7h",
+    "replies": 0,
+    "reposts": 0,
+    "likes": 0,
+    "image_urls": [
+      "https://pbs.twimg.com/profile_images/1989491430574977024/epWpw28j_normal.jpg?format=jpg&name=large"
+    ],
+    "video_url": "",
+    "image_content": [
+      "[download failed]"
+    ],
+    "comments": [
+      {
+        "author": "Matt Pocock",
+        "author_handle": "mattpocockuk",
+        "text": "Want to put something in CLAUDE.md?\n\nStick it in CODE_STANDARDS.md instead.\n\nThen pass it to a reviewer agent that runs on every PR.\n\nSave tokens during implementation, spend them during review.",
+        "timestamp": "2026-04-12T13:29:16.000Z"
+      },
+      {
+        "author": "Matt Pocock",
+        "author_handle": "mattpocockuk",
+        "text": "If you didn't notice, this is red green refactor split across 2 coding agent sessions.",
+        "timestamp": "2026-04-12T14:46:24.000Z"
+      },
+      {
+        "author": "Jose Vidal",
+        "author_handle": "jovid78",
+        "text": "I understand its common to have a Review agent.. however my first reaction/thought on that is that you end up spending tokens in getting a sub par-implementation then tokens on the review then tokens on the fix? \nBut I guess its just the nature of the beast ?",
+        "timestamp": "2026-04-12T14:59:39.000Z"
+      },
+      {
+        "author": "Matt Pocock",
+        "author_handle": "mattpocockuk",
+        "text": "Make it work, then make it good",
+        "timestamp": "2026-04-12T15:03:06.000Z"
+      },
+      {
+        "author": "Jose Vidal",
+        "author_handle": "jovid78",
+        "text": "Guess that makes sense",
+        "timestamp": "2026-04-12T22:35:51.000Z"
+      }
+    ],
+    "scraped_at": "2026-04-13T06:01:30.732803"
+  }
+]
