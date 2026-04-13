@@ -18,17 +18,26 @@ Usage:
 """
 
 import json
+import os
 import random
-import sqlite3
 import subprocess
 import sys
 import time
 from datetime import datetime
 from pathlib import Path
 
+for _p in [
+    os.environ.get("CRAWLER_DIR", ""),
+    os.path.expanduser("~/.openclaw/workspace/crawlers"),
+    os.path.expanduser("~/crawlers"),
+]:
+    if _p and os.path.isfile(os.path.join(_p, "crawler_db.py")):
+        sys.path.insert(0, _p)
+        break
+import crawler_db
+
 BASE_DIR = Path(__file__).parent
 DATA_DIR = BASE_DIR / "data"
-DB_FILE = BASE_DIR / "x_scraper.db"
 LOG_FILE = BASE_DIR / "scheduler.log"
 
 MAX_SCRAPES_PER_DAY = 8
@@ -41,129 +50,6 @@ QUIET_START = 2
 QUIET_END = 5
 
 
-# ── Database ────────────────────────────────────────────────────────
-
-def init_db():
-    conn = sqlite3.connect(str(DB_FILE))
-    c = conn.cursor()
-    c.executescript("""
-        CREATE TABLE IF NOT EXISTS targets (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            target_url TEXT UNIQUE,
-            target_name TEXT DEFAULT '',
-            target_type TEXT DEFAULT 'profile',
-            last_scraped TEXT,
-            total_posts INTEGER DEFAULT 0,
-            total_replies INTEGER DEFAULT 0,
-            created_at TEXT DEFAULT CURRENT_TIMESTAMP
-        );
-
-        CREATE TABLE IF NOT EXISTS posts (
-            post_id TEXT PRIMARY KEY,
-            target_url TEXT NOT NULL,
-            post_url TEXT,
-            author TEXT DEFAULT '',
-            author_handle TEXT DEFAULT '',
-            text TEXT DEFAULT '',
-            timestamp TEXT DEFAULT '',
-            replies INTEGER DEFAULT 0,
-            reposts INTEGER DEFAULT 0,
-            likes INTEGER DEFAULT 0,
-            image_urls TEXT DEFAULT '[]',
-            video_url TEXT DEFAULT '',
-            image_content TEXT DEFAULT '[]',
-            scraped_at TEXT,
-            FOREIGN KEY (target_url) REFERENCES targets(target_url)
-        );
-        CREATE INDEX IF NOT EXISTS idx_posts_target ON posts(target_url);
-        CREATE INDEX IF NOT EXISTS idx_posts_date ON posts(scraped_at);
-
-        CREATE TABLE IF NOT EXISTS tweet_replies (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            post_id TEXT NOT NULL,
-            target_url TEXT NOT NULL,
-            author TEXT DEFAULT '',
-            author_handle TEXT DEFAULT '',
-            text TEXT DEFAULT '',
-            timestamp TEXT DEFAULT '',
-            scraped_at TEXT,
-            FOREIGN KEY (post_id) REFERENCES posts(post_id)
-        );
-
-        CREATE TABLE IF NOT EXISTS scrape_log (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            target_url TEXT,
-            started_at TEXT,
-            finished_at TEXT,
-            posts_new INTEGER DEFAULT 0,
-            posts_total INTEGER DEFAULT 0,
-            replies_new INTEGER DEFAULT 0,
-            posts_skipped INTEGER DEFAULT 0,
-            status TEXT DEFAULT 'success',
-            error TEXT DEFAULT ''
-        );
-    """)
-    # Migrate: add columns if missing
-    for col in [("posts", "reply_count INTEGER DEFAULT 0"),
-                ("posts", "last_deep_scraped TEXT"),
-                ("scrape_log", "posts_skipped INTEGER DEFAULT 0")]:
-        try:
-            c.execute(f"ALTER TABLE {col[0]} ADD COLUMN {col[1]}")
-        except sqlite3.OperationalError:
-            pass
-    conn.commit()
-    conn.close()
-    log("Database initialized")
-
-
-def get_known_post_ids(target_url):
-    conn = sqlite3.connect(str(DB_FILE))
-    c = conn.cursor()
-    c.execute("SELECT post_id FROM posts WHERE target_url = ?", (target_url,))
-    ids = {r[0] for r in c.fetchall()}
-    conn.close()
-    return ids
-
-
-def add_target(url, name="", target_type="profile"):
-    conn = sqlite3.connect(str(DB_FILE))
-    c = conn.cursor()
-    c.execute("INSERT OR IGNORE INTO targets (target_url, target_name, target_type) VALUES (?, ?, ?)",
-              (url, name, target_type))
-    conn.commit()
-    conn.close()
-    log(f"Added target: {url} ({name})")
-
-
-def list_targets():
-    conn = sqlite3.connect(str(DB_FILE))
-    c = conn.cursor()
-    c.execute("SELECT target_url, target_name, target_type, total_posts, last_scraped FROM targets ORDER BY total_posts DESC")
-    rows = c.fetchall()
-    if not rows:
-        print("No targets. Use --add <url> to add targets.")
-    else:
-        print(f"\n📊 Tracked Targets ({len(rows)}):")
-        for url, name, ttype, posts, last in rows:
-            print(f"  {name or url} [{ttype}]: {posts} posts (last: {last or 'never'})")
-    conn.close()
-
-
-def show_db_stats():
-    conn = sqlite3.connect(str(DB_FILE))
-    c = conn.cursor()
-    print(f"\n📊 Database Stats")
-    print(f"   Targets:  {c.execute('SELECT COUNT(*) FROM targets').fetchone()[0]}")
-    print(f"   Posts:    {c.execute('SELECT COUNT(*) FROM posts').fetchone()[0]}")
-    print(f"   Replies:  {c.execute('SELECT COUNT(*) FROM tweet_replies').fetchone()[0]}")
-    ok = c.execute("SELECT COUNT(*) FROM scrape_log WHERE status='success'").fetchone()[0]
-    err = c.execute("SELECT COUNT(*) FROM scrape_log WHERE status='error'").fetchone()[0]
-    print(f"   Scrapes:  {ok} success, {err} errors")
-    print(f"   Total likes: {c.execute('SELECT SUM(likes) FROM posts').fetchone()[0] or 0}")
-    print(f"   Total reposts: {c.execute('SELECT SUM(reposts) FROM posts').fetchone()[0] or 0}")
-    conn.close()
-
-
 def log(msg):
     ts = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     line = f"[{ts}] {msg}"
@@ -172,87 +58,13 @@ def log(msg):
         f.write(line + "\n")
 
 
-def log_scrape(target_url, started, new_p, total_p, new_r, status="success", error="", posts_skipped=0):
-    conn = sqlite3.connect(str(DB_FILE))
-    c = conn.cursor()
-    c.execute("""INSERT INTO scrape_log (target_url, started_at, finished_at, posts_new, posts_total, replies_new, posts_skipped, status, error)
-                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-              (target_url, started, datetime.now().isoformat(), new_p, total_p, new_r, posts_skipped, status, error))
-    conn.commit()
-    conn.close()
-
-
-# ── Save to DB ──────────────────────────────────────────────────────
-
-def save_posts(target_url, posts):
-    """Save posts with deduplication. Returns (new_posts, new_replies, skipped)."""
-    conn = sqlite3.connect(str(DB_FILE))
-    c = conn.cursor()
-
-    # Get existing IDs
-    c.execute("SELECT post_id FROM posts WHERE target_url = ?", (target_url,))
-    known = {r[0] for r in c.fetchall()}
-
-    new_posts = 0
-    new_replies = 0
-    skipped = 0
-    now = datetime.now().isoformat()
-
-    for post in posts:
-        pid = post.get("id", "")
-        if not pid:
-            continue
-
-        replies = post.get("comments", [])
-        reply_count = len(replies)
-
-        if pid in known:
-            # Existing post: only add new replies
-            if replies:
-                for reply in replies:
-                    c.execute("""SELECT COUNT(*) FROM tweet_replies
-                                 WHERE post_id = ? AND author_handle = ? AND substr(text, 1, 100) = substr(?, 1, 100)""",
-                              (pid, reply.get("author_handle", ""), reply.get("text", "")))
-                    if c.fetchone()[0] == 0:
-                        new_replies += 1
-                        c.execute("INSERT INTO tweet_replies (post_id, target_url, author, author_handle, text, timestamp, scraped_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
-                                  (pid, target_url, reply.get("author", ""), reply.get("author_handle", ""),
-                                   reply.get("text", ""), reply.get("timestamp", ""), now))
-                c.execute("UPDATE posts SET reply_count = ?, last_deep_scraped = ?, replies = ?, reposts = ?, likes = ? WHERE post_id = ?",
-                          (reply_count, now, post.get("replies", 0), post.get("reposts", 0), post.get("likes", 0), pid))
-            skipped += 1
-            continue
-
-        # New post
-        new_posts += 1
-        c.execute("""
-            INSERT OR REPLACE INTO posts
-            (post_id, target_url, post_url, author, author_handle, text, timestamp,
-             replies, reposts, likes, image_urls, video_url, image_content, scraped_at,
-             reply_count, last_deep_scraped)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """, (pid, target_url, post.get("url", ""), post.get("author", ""),
-              post.get("author_handle", ""), post.get("text", ""), post.get("timestamp", ""),
-              post.get("replies", 0), post.get("reposts", 0), post.get("likes", 0),
-              json.dumps(post.get("image_urls", [])), post.get("video_url", ""),
-              json.dumps(post.get("image_content", [])), now,
-              reply_count, now if replies else None))
-
-        for reply in replies:
-            new_replies += 1
-            c.execute("INSERT INTO tweet_replies (post_id, target_url, author, author_handle, text, timestamp, scraped_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
-                      (pid, target_url, reply.get("author", ""), reply.get("author_handle", ""),
-                       reply.get("text", ""), reply.get("timestamp", ""), now))
-
-    # Update target stats
-    c.execute("""UPDATE targets SET last_scraped = ?,
-                total_posts = (SELECT COUNT(*) FROM posts WHERE target_url = ?),
-                total_replies = (SELECT COUNT(*) FROM tweet_replies WHERE target_url = ?)
-                WHERE target_url = ?""", (now, target_url, target_url, target_url))
-
-    conn.commit()
-    conn.close()
-    return new_posts, new_replies, skipped
+def _twitter_external_id(url):
+    """Extract handle or list id from an x.com URL."""
+    from urllib.parse import urlparse
+    path = urlparse(url).path.strip('/')
+    if '/lists/' in url or path.startswith('i/lists/'):
+        return path.rsplit('/', 1)[-1]
+    return path.split('/')[0]
 
 
 # ── Runner ──────────────────────────────────────────────────────────
@@ -265,7 +77,8 @@ def run_scraper(target_url):
     limit = random.randint(20, 60)
 
     # Pass known tweet IDs for incremental scraping
-    known = get_known_post_ids(target_url)
+    sid = crawler_db.get_source_id("twitter", _twitter_external_id(target_url))
+    known = crawler_db.get_known_post_ids(sid) if sid else set()
     known_file = None
     cmd = [str(venv_python), str(scraper),
            "--url", target_url, "--headless",
@@ -331,43 +144,6 @@ def cleanup_old_exports(target_url, keep=5):
     return removed
 
 
-# ── Anti-Detection ──────────────────────────────────────────────────
-
-def get_scrapes_today():
-    conn = sqlite3.connect(str(DB_FILE))
-    c = conn.cursor()
-    c.execute("SELECT COUNT(*) FROM scrape_log WHERE started_at > datetime('now', '-24 hours')")
-    count = c.fetchone()[0]
-    conn.close()
-    return count
-
-
-def pick_next_target():
-    conn = sqlite3.connect(str(DB_FILE))
-    c = conn.cursor()
-
-    # Avoid targets scraped in last 6 hours
-    c.execute("SELECT target_url FROM scrape_log WHERE started_at > datetime('now', '-6 hours')")
-    recent = {r[0] for r in c.fetchall()}
-
-    if recent:
-        placeholders = ','.join(['?'] * len(recent))
-        c.execute(f"""SELECT target_url, target_name FROM targets
-                     WHERE target_url NOT IN ({placeholders})
-                     ORDER BY COALESCE(last_scraped, '1970-01-01') ASC
-                     LIMIT 5""", list(recent))
-    else:
-        c.execute("""SELECT target_url, target_name FROM targets
-                     ORDER BY COALESCE(last_scraped, '1970-01-01') ASC
-                     LIMIT 5""")
-    candidates = c.fetchall()
-    conn.close()
-
-    if not candidates:
-        return None
-    return random.choice(candidates)
-
-
 def should_take_break(session_count):
     return session_count > 0 and session_count % BREAK_EVERY_N == 0
 
@@ -380,40 +156,40 @@ def scrape_one():
         log(f"😴 Quiet hours ({QUIET_START}-{QUIET_END} AM)")
         return False
 
-    if get_scrapes_today() >= MAX_SCRAPES_PER_DAY:
+    if crawler_db.get_scrapes_today("twitter") >= MAX_SCRAPES_PER_DAY:
         log(f"⏸️ Daily limit ({MAX_SCRAPES_PER_DAY})")
         return False
 
-    target = pick_next_target()
-    if not target:
+    picked = crawler_db.pick_next_source("twitter", host=os.environ.get("CRAWLER_HOST"))
+    if not picked:
         log("⚠️ No targets available")
         return False
+    source_id, url, external_id, name = picked
 
-    url, name = target
     started = datetime.now().isoformat()
     log(f"📡 [{name or url}] Starting...")
 
     try:
         posts = run_scraper(url)
         if not posts:
-            log(f"  ⚠️ No posts")
-            log_scrape(url, started, 0, 0, 0, "no_posts")
+            log("  ⚠️ No posts")
+            crawler_db.log_scrape(source_id, "twitter", started, 0, 0, 0, "no_posts")
             return True
-
-        new_p, new_r, skipped = save_posts(url, posts)
-        log(f"  ✅ {len(posts)} posts ({new_p} new, {skipped} already known), {new_r} new replies")
-        log_scrape(url, started, new_p, len(posts), new_r, posts_skipped=skipped)
+        new_p, new_t, skipped = crawler_db.save_posts(source_id, "twitter", posts)
+        log(f"  ✅ {len(posts)} posts ({new_p} new, {skipped} known), {new_t} new replies")
+        crawler_db.log_scrape(source_id, "twitter", started, new_p, len(posts), new_t,
+                              posts_skipped=skipped)
         removed = cleanup_old_exports(url, keep=5)
         if removed:
             log(f"  🧹 Cleaned {removed} old export files")
         return True
     except subprocess.TimeoutExpired:
-        log(f"  ⏰ Timeout")
-        log_scrape(url, started, 0, 0, 0, "error", "Timeout")
+        log("  ⏰ Timeout")
+        crawler_db.log_scrape(source_id, "twitter", started, 0, 0, 0, "error", "Timeout")
         return True
     except Exception as e:
         log(f"  ❌ {e}")
-        log_scrape(url, started, 0, 0, 0, "error", str(e)[:500])
+        crawler_db.log_scrape(source_id, "twitter", started, 0, 0, 0, "error", str(e)[:500])
         return True
 
 
@@ -442,24 +218,34 @@ def main():
     import argparse
     parser = argparse.ArgumentParser(description="X Scraper Scheduler")
     parser.add_argument("--init", action="store_true")
-    parser.add_argument("--add", type=str, metavar="URL", help="Add target (can use multiple times)")
-    parser.add_argument("--add-name", type=str, default="", help="Name for --add")
-    parser.add_argument("--targets", action="store_true", help="List targets")
+    parser.add_argument("--add", type=str, metavar="URL")
+    parser.add_argument("--add-name", type=str, default="")
+    parser.add_argument("--targets", action="store_true")
     parser.add_argument("--db-stats", action="store_true")
     parser.add_argument("--daemon", action="store_true")
     args = parser.parse_args()
 
-    init_db()
+    crawler_db.init_db()
 
     if args.targets:
-        list_targets()
+        rows = crawler_db.list_sources("twitter")
+        if not rows:
+            print("No targets. Use --add <url> to add targets.")
+        else:
+            print(f"\n📊 Tracked Targets ({len(rows)}):")
+            for row in rows:
+                # (id, platform, source_type, external_id, url, name, total_posts, total_threads, last_scraped)
+                _id, _plat, stype, ext, url, name, total_p, _total_t, last = row
+                print(f"  {name or url} [{stype}]: {total_p} posts (last: {last or 'never'})")
     elif args.add:
         name = args.add_name or args.add.rstrip("/").split("/")[-1]
         ttype = "list" if "/lists/" in args.add else "profile"
-        add_target(args.add, name, ttype)
-        list_targets()
+        crawler_db.ensure_source(
+            "twitter", ttype, _twitter_external_id(args.add), args.add, name
+        )
+        log(f"Added target: {args.add} ({name})")
     elif args.db_stats:
-        show_db_stats()
+        crawler_db.show_db_stats("twitter")
     elif args.daemon:
         run_daemon()
     else:
