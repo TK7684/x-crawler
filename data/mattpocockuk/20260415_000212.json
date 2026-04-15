@@ -1,0 +1,498 @@
+[
+  {
+    "id": "2044045887349936319",
+    "url": "https://x.com/mattpocockuk/status/2044045887349936319",
+    "author": "Matt Pocock",
+    "author_handle": "mattpocockuk",
+    "text": "Throwback to when I used to be good at Figma",
+    "timestamp": "2026-04-14T13:31:30.000Z",
+    "timestamp_raw": "10h",
+    "replies": 8,
+    "reposts": 4,
+    "likes": 136,
+    "image_urls": [
+      "https://pbs.twimg.com/profile_images/1666460461884211204/SmBm505D_normal.jpg?format=jpg&name=large",
+      "https://pbs.twimg.com/profile_images/1666460461884211204/SmBm505D_mini.jpg?format=jpg&name=large",
+      "https://pbs.twimg.com/media/FzPPfRhXoAM5NUM?format=jpg&name=large"
+    ],
+    "video_url": "",
+    "image_content": [
+      "[download failed]",
+      "[download failed]",
+      "[OCR error: No module named 'pytesseract']"
+    ],
+    "comments": [
+      {
+        "author": "Matt Pocock",
+        "author_handle": "mattpocockuk",
+        "text": "Throwback to when I used to be good at Figma",
+        "timestamp": "2023-06-22T15:49:36.000Z"
+      },
+      {
+        "author": "Rajat Dhiman",
+        "author_handle": "Rajat_dhiman01",
+        "text": "So now what do you use",
+        "timestamp": "2026-04-14T15:45:12.000Z"
+      },
+      {
+        "author": "Matt Pocock",
+        "author_handle": "mattpocockuk",
+        "text": "@tldraw",
+        "timestamp": "2026-04-14T15:46:13.000Z"
+      },
+      {
+        "author": "Grok",
+        "author_handle": "grok",
+        "text": "Ready to bring ideas to life? Try Grok Imagine today",
+        "timestamp": ""
+      },
+      {
+        "author": "Sam Cymbaluk",
+        "author_handle": "SemanticSamuel",
+        "text": "What do you use now instead?",
+        "timestamp": "2026-04-14T13:54:40.000Z"
+      },
+      {
+        "author": "Anurag Hazra",
+        "author_handle": "anuraghazru",
+        "text": "Throwback to the good old \"TypeScript Tips\" days",
+        "timestamp": "2026-04-14T14:03:39.000Z"
+      },
+      {
+        "author": "Griko Nibras",
+        "author_handle": "display___flex",
+        "text": "this was figma???",
+        "timestamp": "2026-04-14T13:41:14.000Z"
+      },
+      {
+        "author": "Yuval Shimoni",
+        "author_handle": "Yuval_Shimoni",
+        "text": "How do you recommend to set Claude to run lint check only on the files it modified (write/edit) immediately after it finishes a batch of changes BUT not every each individual tool call?\n\nI saw Stop hook, which works great, but it run after each response done..",
+        "timestamp": "2026-04-14T18:58:09.000Z"
+      },
+      {
+        "author": "rbbydotdev",
+        "author_handle": "rbbydotdev",
+        "text": "I’ve had some success with agent-browser screen captures, if you already have the syntax highlight etc. even in a agent skill for doc build outs",
+        "timestamp": "2026-04-14T13:54:50.000Z"
+      },
+      {
+        "author": "original-thought",
+        "author_handle": "orgnlthghts",
+        "text": "that’s dope!",
+        "timestamp": "2026-04-14T14:55:54.000Z"
+      },
+      {
+        "author": "dax",
+        "author_handle": "thdxr",
+        "text": "in opencode 1.4.4 it no longer spawns or depend on ripgrep\n\nwe've integrated it natively into opencode thanks to \n@_pi0_\n's wonderful package\n\nthis is a first step before we move fully over to fff for all our search operations so that things work well on huge codebases",
+        "timestamp": "2026-04-14T18:53:23.000Z"
+      },
+      {
+        "author": "Matt Pocock",
+        "author_handle": "mattpocockuk",
+        "text": "I've found myself writing:\n\n\"I don't know this area of code well. Go up a layer of abstraction. Give me a map of all the relevant modules and callers.\"\n\nMight need a new skill here. What should I name it?",
+        "timestamp": "2026-04-14T07:06:29.000Z"
+      },
+      {
+        "author": "Mitchell Hashimoto",
+        "author_handle": "mitchellh",
+        "text": "One of the most requested GitHub features in years and the website looks like it was designed by someone 9 years into a 2 year community college program.",
+        "timestamp": "2026-04-13T20:27:14.000Z"
+      }
+    ],
+    "scraped_at": "2026-04-15T00:00:26.774100"
+  },
+  {
+    "id": "1671908303918473217",
+    "url": "https://x.com/mattpocockuk/status/1671908303918473217/photo/1",
+    "author": "Matt Pocock",
+    "author_handle": "mattpocockuk",
+    "text": "Throwback to when I used to be good at Figma",
+    "timestamp": "2023-06-22T15:49:36.000Z",
+    "timestamp_raw": "Jun 22, 2023",
+    "replies": 8,
+    "reposts": 4,
+    "likes": 136,
+    "image_urls": [
+      "https://pbs.twimg.com/profile_images/1666460461884211204/SmBm505D_normal.jpg?format=jpg&name=large",
+      "https://pbs.twimg.com/profile_images/1666460461884211204/SmBm505D_mini.jpg?format=jpg&name=large",
+      "https://pbs.twimg.com/media/FzPPfRhXoAM5NUM?format=jpg&name=large"
+    ],
+    "video_url": "",
+    "image_content": [
+      "[download failed]",
+      "[download failed]",
+      "[OCR error: No module named 'pytesseract']"
+    ],
+    "comments": [
+      {
+        "author": "Matt Pocock",
+        "author_handle": "mattpocockuk",
+        "text": "By far the strangest TypeScript trick I've ever come across is the Loose Autocomplete trick.\n\nNo idea who discovered this, but it's become widely used by OSS wizards.\n\nIt's now even used by React's types to type attributes like aria-role.",
+        "timestamp": "2023-06-22T15:49:36.000Z"
+      },
+      {
+        "author": "Matt Pocock",
+        "author_handle": "mattpocockuk",
+        "text": "I don't _really_ know why this works, but here's my best guess:\n\nWithout the & {}, TypeScript collapses 'small' | 'large' | string into just 'string'. It does this IMMEDIATELY. If you hover over the first example of Size, you'll see that it's just 'string'.",
+        "timestamp": "2023-06-22T16:01:44.000Z"
+      },
+      {
+        "author": "Matt Pocock",
+        "author_handle": "mattpocockuk",
+        "text": "But WITH the & {}, it doesn't collapse the union immediately. It does later (when it's used).\n\nIf you hover the second Size type, you'll see it's still 'small' | 'large' | (string & {}), not 'string'.",
+        "timestamp": "2023-06-22T16:02:24.000Z"
+      },
+      {
+        "author": "Matt Pocock",
+        "author_handle": "mattpocockuk",
+        "text": "So that means there's a window that the union hasn't been collapsed where autocomplete can be provided.",
+        "timestamp": "2023-06-22T16:02:29.000Z"
+      },
+      {
+        "author": "Matt Pocock",
+        "author_handle": "mattpocockuk",
+        "text": "The earliest sighting I've seen is a suggestion in a thread by \n@SeaRyanC",
+        "timestamp": "2023-06-22T16:26:15.000Z"
+      },
+      {
+        "author": "Carlos Zanella",
+        "author_handle": "cefzanella",
+        "text": "What's your opinion on this kind of thing?\n\nI'm very against this type of trick, because you're making your code confusing and not adding much value out of it.\n\nId I see \"'something' | string\" during a code review, my first instinct is to reject it because it surely looks wrong.",
+        "timestamp": "2023-06-22T15:54:32.000Z"
+      },
+      {
+        "author": "Matt Pocock",
+        "author_handle": "mattpocockuk",
+        "text": "I'd advise capturing it in a type helper:\n\n// Lets you pass string while also giving autocomplete\n// for T\ntype LooseAutocomplete<T> = T | (string & {});",
+        "timestamp": "2023-06-22T15:55:50.000Z"
+      },
+      {
+        "author": "Ken Tan",
+        "author_handle": "iceniveth",
+        "text": "I think type Size on the first LOC should be a type SizeOrAnything",
+        "timestamp": "2023-06-22T16:26:11.000Z"
+      },
+      {
+        "author": "Matt Pocock",
+        "author_handle": "mattpocockuk",
+        "text": "Whoops, my mistake!",
+        "timestamp": "2023-06-22T16:26:29.000Z"
+      },
+      {
+        "author": "create_react_app",
+        "author_handle": "boggo_sort",
+        "text": "Does the {} mean you can pass in objects too?",
+        "timestamp": "2023-06-22T15:55:10.000Z"
+      },
+      {
+        "author": "Matt Pocock",
+        "author_handle": "mattpocockuk",
+        "text": "Nope! Give it a go!",
+        "timestamp": "2023-06-22T15:56:01.000Z"
+      },
+      {
+        "author": "Ian Simmons",
+        "author_handle": "isimmons33",
+        "text": "Stuff like this (undocumented) seems like unintended happy side affect? Makes me wonder if I use it now will it break in future version of TS? For TS tricks/hacks in general",
+        "timestamp": "2023-06-28T17:45:33.000Z"
+      },
+      {
+        "author": "Matt Pocock",
+        "author_handle": "mattpocockuk",
+        "text": "TS tests itself against DefinitelyTyped - a MASSIVE collection of library types, so stuff like this never breaks unless planned.",
+        "timestamp": "2023-06-28T17:46:16.000Z"
+      },
+      {
+        "author": "Riyan",
+        "author_handle": "RiyanMADAO",
+        "text": "Where does the type SizeOrAnyString come from?",
+        "timestamp": "2023-06-23T10:34:32.000Z"
+      },
+      {
+        "author": "Matt Pocock",
+        "author_handle": "mattpocockuk",
+        "text": "My bad, supposed to be 'Size'",
+        "timestamp": "2023-06-23T10:46:29.000Z"
+      },
+      {
+        "author": "Anthony Shew",
+        "author_handle": "anthonysheww",
+        "text": "We were talking about this the other day!",
+        "timestamp": "2023-06-22T16:27:55.000Z"
+      },
+      {
+        "author": "trav",
+        "author_handle": "techsavvytravvy",
+        "text": "oh ya another one i alias bc i will NOT remember to do this lol",
+        "timestamp": "2023-06-22T23:28:09.000Z"
+      },
+      {
+        "author": "Jacob MG Evans",
+        "author_handle": "JacobMGEvans",
+        "text": "@anthonysheww\n mentioned it on Twitter last week I think.",
+        "timestamp": "2023-06-22T16:44:01.000Z"
+      },
+      {
+        "author": "Søren Bramer Schmidt",
+        "author_handle": "sorenbs",
+        "text": "This is really neat! I was surprised this isn't the default behavior, but just shrugged and moved on. Will be using this.",
+        "timestamp": "2023-06-22T16:04:26.000Z"
+      },
+      {
+        "author": "Kevin Thomas Van Cott",
+        "author_handle": "KevinVanCott",
+        "text": "I use this everywhere in my table libraries.",
+        "timestamp": "2023-06-22T16:44:48.000Z"
+      }
+    ],
+    "scraped_at": "2026-04-15T00:00:45.380920"
+  },
+  {
+    "id": "1671911354167439362",
+    "url": "https://x.com/mattpocockuk/status/1671911354167439362",
+    "author": "Matt Pocock",
+    "author_handle": "mattpocockuk",
+    "text": "I don't _really_ know why this works, but here's my best guess:\n\nWithout the & {}, TypeScript collapses 'small' | 'large' | string into just 'string'. It does this IMMEDIATELY. If you hover over the first example of Size, you'll see that it's just 'string'.",
+    "timestamp": "2023-06-22T16:01:44.000Z",
+    "timestamp_raw": "Jun 22, 2023",
+    "replies": 4,
+    "reposts": 0,
+    "likes": 32,
+    "image_urls": [
+      "https://pbs.twimg.com/profile_images/1666460461884211204/SmBm505D_normal.jpg?format=jpg&name=large"
+    ],
+    "video_url": "",
+    "image_content": [
+      "[download failed]"
+    ],
+    "comments": [
+      {
+        "author": "Matt Pocock",
+        "author_handle": "mattpocockuk",
+        "text": "By far the strangest TypeScript trick I've ever come across is the Loose Autocomplete trick.\n\nNo idea who discovered this, but it's become widely used by OSS wizards.\n\nIt's now even used by React's types to type attributes like aria-role.",
+        "timestamp": "2023-06-22T15:49:36.000Z"
+      },
+      {
+        "author": "Matt Pocock",
+        "author_handle": "mattpocockuk",
+        "text": "I don't _really_ know why this works, but here's my best guess:\n\nWithout the & {}, TypeScript collapses 'small' | 'large' | string into just 'string'. It does this IMMEDIATELY. If you hover over the first example of Size, you'll see that it's just 'string'.",
+        "timestamp": "2023-06-22T16:01:44.000Z"
+      },
+      {
+        "author": "Matt Pocock",
+        "author_handle": "mattpocockuk",
+        "text": "But WITH the & {}, it doesn't collapse the union immediately. It does later (when it's used).\n\nIf you hover the second Size type, you'll see it's still 'small' | 'large' | (string & {}), not 'string'.",
+        "timestamp": "2023-06-22T16:02:24.000Z"
+      },
+      {
+        "author": "Matt Pocock",
+        "author_handle": "mattpocockuk",
+        "text": "So that means there's a window that the union hasn't been collapsed where autocomplete can be provided.",
+        "timestamp": "2023-06-22T16:02:29.000Z"
+      },
+      {
+        "author": "Matt Pocock",
+        "author_handle": "mattpocockuk",
+        "text": "The earliest sighting I've seen is a suggestion in a thread by \n@SeaRyanC",
+        "timestamp": "2023-06-22T16:26:15.000Z"
+      },
+      {
+        "author": "Dominik Jašek",
+        "author_handle": "jasek_dominik",
+        "text": "I found out very strange behaviour of Intellij IDEs (like RubyMine for instance)\n\nAutocomplete works also for the latter one\n\n\nhttps://\ntsplay.dev/NdaeYm",
+        "timestamp": "2023-07-20T10:55:13.000Z"
+      },
+      {
+        "author": "Matt Pocock",
+        "author_handle": "mattpocockuk",
+        "text": "Yep, they have some improvements built on top of tsserver",
+        "timestamp": "2023-07-20T10:56:09.000Z"
+      },
+      {
+        "author": "Benedikt S.",
+        "author_handle": "benediktms",
+        "text": "Something something everything is an object?",
+        "timestamp": "2023-06-23T06:53:39.000Z"
+      },
+      {
+        "author": "uolɥɐʞ ɹɐunɥ",
+        "author_handle": "kinggoesgaming",
+        "text": "I think you mean ‘expands into just string’ since it is taking the broader scope for the type and not collapsing…",
+        "timestamp": "2023-06-23T01:35:25.000Z"
+      }
+    ],
+    "scraped_at": "2026-04-15T00:01:00.988862"
+  },
+  {
+    "id": "1671911525148241922",
+    "url": "https://x.com/mattpocockuk/status/1671911525148241922",
+    "author": "Matt Pocock",
+    "author_handle": "mattpocockuk",
+    "text": "But WITH the & {}, it doesn't collapse the union immediately. It does later (when it's used).\n\nIf you hover the second Size type, you'll see it's still 'small' | 'large' | (string & {}), not 'string'.",
+    "timestamp": "2023-06-22T16:02:24.000Z",
+    "timestamp_raw": "Jun 22, 2023",
+    "replies": 1,
+    "reposts": 0,
+    "likes": 24,
+    "image_urls": [
+      "https://pbs.twimg.com/profile_images/1666460461884211204/SmBm505D_normal.jpg?format=jpg&name=large"
+    ],
+    "video_url": "",
+    "image_content": [
+      "[download failed]"
+    ],
+    "comments": [
+      {
+        "author": "Matt Pocock",
+        "author_handle": "mattpocockuk",
+        "text": "By far the strangest TypeScript trick I've ever come across is the Loose Autocomplete trick.\n\nNo idea who discovered this, but it's become widely used by OSS wizards.\n\nIt's now even used by React's types to type attributes like aria-role.",
+        "timestamp": "2023-06-22T15:49:36.000Z"
+      },
+      {
+        "author": "Matt Pocock",
+        "author_handle": "mattpocockuk",
+        "text": "I don't _really_ know why this works, but here's my best guess:\n\nWithout the & {}, TypeScript collapses 'small' | 'large' | string into just 'string'. It does this IMMEDIATELY. If you hover over the first example of Size, you'll see that it's just 'string'.",
+        "timestamp": "2023-06-22T16:01:44.000Z"
+      },
+      {
+        "author": "Matt Pocock",
+        "author_handle": "mattpocockuk",
+        "text": "But WITH the & {}, it doesn't collapse the union immediately. It does later (when it's used).\n\nIf you hover the second Size type, you'll see it's still 'small' | 'large' | (string & {}), not 'string'.",
+        "timestamp": "2023-06-22T16:02:24.000Z"
+      },
+      {
+        "author": "Matt Pocock",
+        "author_handle": "mattpocockuk",
+        "text": "So that means there's a window that the union hasn't been collapsed where autocomplete can be provided.",
+        "timestamp": "2023-06-22T16:02:29.000Z"
+      },
+      {
+        "author": "Matt Pocock",
+        "author_handle": "mattpocockuk",
+        "text": "The earliest sighting I've seen is a suggestion in a thread by \n@SeaRyanC",
+        "timestamp": "2023-06-22T16:26:15.000Z"
+      }
+    ],
+    "scraped_at": "2026-04-15T00:01:17.302903"
+  },
+  {
+    "id": "1671911543494025221",
+    "url": "https://x.com/mattpocockuk/status/1671911543494025221",
+    "author": "Matt Pocock",
+    "author_handle": "mattpocockuk",
+    "text": "So that means there's a window that the union hasn't been collapsed where autocomplete can be provided.",
+    "timestamp": "2023-06-22T16:02:29.000Z",
+    "timestamp_raw": "Jun 22, 2023",
+    "replies": 2,
+    "reposts": 0,
+    "likes": 15,
+    "image_urls": [
+      "https://pbs.twimg.com/profile_images/1666460461884211204/SmBm505D_normal.jpg?format=jpg&name=large"
+    ],
+    "video_url": "",
+    "image_content": [
+      "[download failed]"
+    ],
+    "comments": [
+      {
+        "author": "Matt Pocock",
+        "author_handle": "mattpocockuk",
+        "text": "By far the strangest TypeScript trick I've ever come across is the Loose Autocomplete trick.\n\nNo idea who discovered this, but it's become widely used by OSS wizards.\n\nIt's now even used by React's types to type attributes like aria-role.",
+        "timestamp": "2023-06-22T15:49:36.000Z"
+      },
+      {
+        "author": "Matt Pocock",
+        "author_handle": "mattpocockuk",
+        "text": "I don't _really_ know why this works, but here's my best guess:\n\nWithout the & {}, TypeScript collapses 'small' | 'large' | string into just 'string'. It does this IMMEDIATELY. If you hover over the first example of Size, you'll see that it's just 'string'.",
+        "timestamp": "2023-06-22T16:01:44.000Z"
+      },
+      {
+        "author": "Matt Pocock",
+        "author_handle": "mattpocockuk",
+        "text": "But WITH the & {}, it doesn't collapse the union immediately. It does later (when it's used).\n\nIf you hover the second Size type, you'll see it's still 'small' | 'large' | (string & {}), not 'string'.",
+        "timestamp": "2023-06-22T16:02:24.000Z"
+      },
+      {
+        "author": "Matt Pocock",
+        "author_handle": "mattpocockuk",
+        "text": "So that means there's a window that the union hasn't been collapsed where autocomplete can be provided.",
+        "timestamp": "2023-06-22T16:02:29.000Z"
+      },
+      {
+        "author": "Matt Pocock",
+        "author_handle": "mattpocockuk",
+        "text": "The earliest sighting I've seen is a suggestion in a thread by \n@SeaRyanC",
+        "timestamp": "2023-06-22T16:26:15.000Z"
+      },
+      {
+        "author": "Shaul",
+        "author_handle": "ShaulGoo",
+        "text": "Do you see any reason this shouldn't be fixed by typescript?",
+        "timestamp": "2023-06-22T16:11:42.000Z"
+      },
+      {
+        "author": "Matt Pocock",
+        "author_handle": "mattpocockuk",
+        "text": "No, the current behaviour is fine.",
+        "timestamp": "2023-06-22T16:12:03.000Z"
+      }
+    ],
+    "scraped_at": "2026-04-15T00:01:33.515680"
+  },
+  {
+    "id": "1671917524131168258",
+    "url": "https://x.com/mattpocockuk/status/1671917524131168258",
+    "author": "Matt Pocock",
+    "author_handle": "mattpocockuk",
+    "text": "The earliest sighting I've seen is a suggestion in a thread by \n@SeaRyanC",
+    "timestamp": "2023-06-22T16:26:15.000Z",
+    "timestamp_raw": "Jun 22, 2023",
+    "replies": 0,
+    "reposts": 0,
+    "likes": 24,
+    "image_urls": [
+      "https://pbs.twimg.com/profile_images/1666460461884211204/SmBm505D_normal.jpg?format=jpg&name=large",
+      "https://pbs.twimg.com/card_img/2043814852922355714/s8RYfC4g?format=jpg&name=large"
+    ],
+    "video_url": "",
+    "image_content": [
+      "[download failed]",
+      "[OCR error: No module named 'pytesseract']"
+    ],
+    "comments": [
+      {
+        "author": "Matt Pocock",
+        "author_handle": "mattpocockuk",
+        "text": "By far the strangest TypeScript trick I've ever come across is the Loose Autocomplete trick.\n\nNo idea who discovered this, but it's become widely used by OSS wizards.\n\nIt's now even used by React's types to type attributes like aria-role.",
+        "timestamp": "2023-06-22T15:49:36.000Z"
+      },
+      {
+        "author": "Matt Pocock",
+        "author_handle": "mattpocockuk",
+        "text": "I don't _really_ know why this works, but here's my best guess:\n\nWithout the & {}, TypeScript collapses 'small' | 'large' | string into just 'string'. It does this IMMEDIATELY. If you hover over the first example of Size, you'll see that it's just 'string'.",
+        "timestamp": "2023-06-22T16:01:44.000Z"
+      },
+      {
+        "author": "Matt Pocock",
+        "author_handle": "mattpocockuk",
+        "text": "But WITH the & {}, it doesn't collapse the union immediately. It does later (when it's used).\n\nIf you hover the second Size type, you'll see it's still 'small' | 'large' | (string & {}), not 'string'.",
+        "timestamp": "2023-06-22T16:02:24.000Z"
+      },
+      {
+        "author": "Matt Pocock",
+        "author_handle": "mattpocockuk",
+        "text": "So that means there's a window that the union hasn't been collapsed where autocomplete can be provided.",
+        "timestamp": "2023-06-22T16:02:29.000Z"
+      },
+      {
+        "author": "Matt Pocock",
+        "author_handle": "mattpocockuk",
+        "text": "The earliest sighting I've seen is a suggestion in a thread by \n@SeaRyanC",
+        "timestamp": "2023-06-22T16:26:15.000Z"
+      }
+    ],
+    "scraped_at": "2026-04-15T00:01:50.664062"
+  }
+]
