@@ -1,0 +1,96 @@
+[
+  {
+    "id": "2044653121973211615",
+    "url": "https://x.com/JRTDesk/status/2044653121973211615",
+    "author": "JRT",
+    "author_handle": "JRTDesk",
+    "text": "「คุณคิดว่าจะสามารถเกษียณสุขได้ด้วยการสะสม $BTC เพียงอย่างเดียว ได้ไหม?」\n\nขอพูดตรงๆ ก่อนนะครับ... ผมไม่ใช่ Bitcoiner ผมอยู่ใน traditional financial market มาตลอด เน้น equity เป็นหลัก มี BTC เป็นส่วนน้อยของ portfolio.. นี่คือสิ่งที่มองจากฝั่งผมจริงๆ...\n\nคำถามนี้มี framing error",
+    "timestamp": "2026-04-16T05:44:26.000Z",
+    "timestamp_raw": "15m",
+    "replies": 3,
+    "reposts": 8,
+    "likes": 19,
+    "image_urls": [
+      "https://pbs.twimg.com/profile_images/1893116365390651392/eN5SUIRy_normal.jpg?format=jpg&name=large",
+      "https://pbs.twimg.com/profile_images/1614664202953850882/iN2NMSaX_mini.jpg?format=jpg&name=large"
+    ],
+    "video_url": "",
+    "image_content": [
+      "[download failed]",
+      "[download failed]"
+    ],
+    "comments": [
+      {
+        "author": "JRT",
+        "author_handle": "JRTDesk",
+        "text": "「คุณคิดว่าจะสามารถเกษียณสุขได้ด้วยการสะสม $BTC เพียงอย่างเดียว ได้ไหม?」\n\nขอพูดตรงๆ ก่อนนะครับ... ผมไม่ใช่ Bitcoiner ผมอยู่ใน traditional financial market มาตลอด เน้น equity เป็นหลัก มี BTC เป็นส่วนน้อยของ portfolio.. นี่คือสิ่งที่มองจากฝั่งผมจริงๆ...\n\nคำถามนี้มี framing error ซ่อนอยู่ครับ..\n\n「เกษียณสุข」ไม่ได้แปลว่า net worth สูง... มันแปลว่ามี withdrawal ที่ยั่งยืน ไม่ทำให้ portfolio พังก่อนตาย.. สองเรื่องนี้ต่างกันคนละโลก\n\nBTC ไม่มี native cashflow.. ไม่มีดอก.. ไม่มีปันผล.. กลยุทธ์สร้าง yield เช่น.. covered calls หรือ DeFi มีอยู่จริง แต่ทั้งสองให้ income ดีตอนตลาดขึ้น และหดตัวตอนตลาดลง นั่นถือเป็น procyclical income ซึ่งแก้ปัญหา retirement ไม่ได้..\n\nปัญหาจริงๆ คือ Sequence of Returns Risk..\n\nลองสมมติดู.. ถือ BTC $5M วันเกษียณ ใช้ 4% rule ถอนปีละ $200k ซึ่งเป็น baseline ที่ financial planner ทั่วโลกใช้กับ diversified port แต่ถ้าปีแรก BTC ร่วง 70% ซึ่งเกิดขึ้นจริงมาแล้วหลายครั้ง รวม drawdown 70-90%+ ในหลายรอบ...\n\nportfolio เหลือ $1.5M แต่ยังต้องถอน $200k อยู่.. safe withdrawal rate พุ่งเป็น 13% ทันที.. จากจุดนั้น math พังแล้วครับ.. ถึง BTC จะ recover 10x ก็ช่วยไม่ได้ เพราะ position ถูก liquidate ไปตอนถูกแล้ว..\n\nยิ่งไปกว่านั้น... 4% rule ถูกพัฒนามาจาก port ที่มี bonds เป็น buffer สำหรับ BTC-heavy port จึงควรใช้ safe withdrawal rate ที่ conservative กว่า คือ 3-3.5% (หรือน้อยกว่านั้นอีก) เท่านั้น.. $5M จริงๆ ควรถอนได้แค่ $150-$175k ต่อปี ไม่ใช่ $200k..\n\nการ borrow against BTC แทนการขายก็ไม่ได้ช่วย... ตอนราคาร่วงหนัก LTV triggers margin call แล้ว liquidate อัตโนมัติตอนต่ำสุด.. ผลลัพธ์เหมือนเดิมแต่ควบคุมไม่ได้เลย.. \n\nport ที่ concentrate ใน single asset ยังมี single point of failure จาก regulatory change หรือ exchange risk อีกด้วย ซึ่งไม่มี institutional portfolio ระดับโลกยอมรับ..\n\nนี่ไม่ใช่ bear case สำหรับ BTC นะครับ... ปัญหาอยู่ที่ structure ของ retirement ล้วนๆ..\n\nความผันผวนตอน accumulate คือ 「เพื่อน」... ซื้อเพิ่มได้ average down ได้.. แต่ความผันผวนตอน distribute คือ 「ศัตรู」... ต้องขายไม่ว่าราคาจะอยู่ตรงไหน..\n.\n.\nแล้วถ้าถือ BTC เยอะอยู่จะทำยังไง??\nถ้าเป็นผม.. วิธีที่จะใช้คือ bucket approach แบ่ง portfolio เป็น 3 ชั้น...\n\nBucket 1 (10-15%) .. cash + short bond, runway 2-3 ปี, ไม่แตะ BTC เลย.. ให้เวลา survive drawdown โดยไม่ถูกบังคับขาย\n\nBucket 2 (40-50%) .. BTC + growth asset, horizon 5-10 ปี, รอ recover ได้เต็มที่.. ไม่มีแรงกดดันต้องขาย\n\nBucket 3 (35-50%) .. cashflow asset เช่น dividend stock, rental, REITs หน้าที่หลักคือ generate yield มา refill Bucket 1 ทุกปี.. ทำให้วงจรนี้หมุนต่อได้โดยไม่ต้องแตะ BTC เลย..\n\nlogic คือ... อย่าให้ BTC กับค่าใช้จ่ายรายวันอยู่ใน bucket เดียวกัน..\n\nทางเลือกเพิ่มเติม... ค่อยๆ ทยอย convert BTC เป็น cashflow asset ในช่วง 3-5 ปีก่อนเกษียณ เพื่อลด concentration ก่อนเข้าสู่ช่วง distribute จริงๆ..\n.\n.\nBTC คือ engine ที่「อาจ」พาไปถึงจุดเกษียณได้เร็วขึ้น... แต่ถ้าอยากให้ retirement ยั่งยืน structure ของ withdrawal สำคัญกว่า size ของ portfolio..\n\n「concentrate to build... diversify to survive...」",
+        "timestamp": "2026-04-16T03:00:50.000Z"
+      },
+      {
+        "author": "kafaak  (นายกาฝาก) ",
+        "author_handle": "kafaak",
+        "text": "ผมวาง Bucket 3 ใบแบบคุณโจว่าเลยครับ",
+        "timestamp": "2026-04-16T05:55:01.000Z"
+      },
+      {
+        "author": "R0PE",
+        "author_handle": "olMoonCrylo",
+        "text": "ผมก็คิดคล้ายๆแบบนี้\nรอ profit  เยอะพอ อาจจะแบ่ง\nมา 50% ครึ่งนึงถือ bond 25% อีกครึ่งถือหุ้นปันผลสัก 4-5%",
+        "timestamp": "2026-04-16T05:53:44.000Z"
+      },
+      {
+        "author": "peterpriew",
+        "author_handle": "PriewPeter",
+        "text": "ขอบคุณครับ",
+        "timestamp": "2026-04-16T05:52:55.000Z"
+      },
+      {
+        "author": "Grok",
+        "author_handle": "grok",
+        "text": "Introducing the fastest video and image generation experience. Try SuperGrok today.",
+        "timestamp": ""
+      },
+      {
+        "author": "JRT",
+        "author_handle": "JRTDesk",
+        "text": "ใจจดใจจ่ออยากให้ถึงวันศุกร์เร็วๆ พวกพนักงานงงว่าทำไม เพราะมันก็แค่พวก Fed speeches, IMF meetings, Oil rig count data.. ก็ไม่มีอะไรขนาดให้ผมอยากให้ถึงวันศุกร์เร็วๆ ขนาดนี้นินา…. \n\nผม:『กูจะดู Perfect Crown』",
+        "timestamp": "2026-04-15T05:53:26.000Z"
+      }
+    ],
+    "scraped_at": "2026-04-16T06:00:28.572414"
+  },
+  {
+    "id": "2044655783422611903",
+    "url": "https://x.com/kafaak/status/2044655783422611903",
+    "author": "kafaak  (นายกาฝาก) ",
+    "author_handle": "kafaak",
+    "text": "ผมวาง Bucket 3 ใบแบบคุณโจว่าเลยครับ",
+    "timestamp": "2026-04-16T05:55:01.000Z",
+    "timestamp_raw": "5m",
+    "replies": 0,
+    "reposts": 0,
+    "likes": 1,
+    "image_urls": [
+      "https://pbs.twimg.com/profile_images/1614664202953850882/iN2NMSaX_normal.jpg?format=jpg&name=large"
+    ],
+    "video_url": "",
+    "image_content": [
+      "[download failed]"
+    ],
+    "comments": [
+      {
+        "author": "JRT",
+        "author_handle": "JRTDesk",
+        "text": "「คุณคิดว่าจะสามารถเกษียณสุขได้ด้วยการสะสม $BTC เพียงอย่างเดียว ได้ไหม?」\n\nขอพูดตรงๆ ก่อนนะครับ... ผมไม่ใช่ Bitcoiner ผมอยู่ใน traditional financial market มาตลอด เน้น equity เป็นหลัก มี BTC เป็นส่วนน้อยของ portfolio.. นี่คือสิ่งที่มองจากฝั่งผมจริงๆ...\n\nคำถามนี้มี framing error",
+        "timestamp": "2026-04-16T05:44:26.000Z"
+      },
+      {
+        "author": "kafaak  (นายกาฝาก) ",
+        "author_handle": "kafaak",
+        "text": "ผมวาง Bucket 3 ใบแบบคุณโจว่าเลยครับ",
+        "timestamp": "2026-04-16T05:55:01.000Z"
+      }
+    ],
+    "scraped_at": "2026-04-16T06:00:46.496935"
+  }
+]
