@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir -p /home/tk578/.openclaw/workspace/crawlers)",
+      "Read(//home/tk578/.openclaw/workspace/**)"
+    ]
+  }
+}

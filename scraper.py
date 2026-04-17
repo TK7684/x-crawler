@@ -348,6 +348,12 @@ async def scrape_target(page, target_url, limit=50, do_replies=True, do_images=T
             except:
                 pass
 
+            # Expand truncated tweets
+            if text and (text.rstrip().endswith("…") or text.rstrip().endswith("...") or len(text) < 200):
+                full_text = await get_full_tweet_text(page, tweet_url)
+                if full_text and len(full_text) > len(text):
+                    text = full_text
+
             # ── Metrics ──
             replies = 0
             reposts = 0
@@ -464,6 +470,22 @@ async def scrape_target(page, target_url, limit=50, do_replies=True, do_images=T
     print(f"\n✅ Collected {len(posts)} posts")
     return posts
 
+
+
+async def get_full_tweet_text(page, tweet_url):
+    """Navigate to tweet page and extract full text."""
+    full_text = None
+    try:
+        await page.goto(tweet_url, wait_until="domcontentloaded", timeout=10000)
+        await random_delay(0.5, 1)
+        article = await page.query_selector("article")
+        if article:
+            tweet_el = await article.query_selector("[data-testid=\"tweetText\"]")
+            if tweet_el:
+                full_text = await safe_text(tweet_el)
+    except:
+        pass
+    return full_text
 
 async def scrape_replies(page, tweet_url, max_replies=30):
     """Open a tweet and scrape replies."""
