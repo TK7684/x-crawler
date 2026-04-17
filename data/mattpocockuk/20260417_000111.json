@@ -1,0 +1,192 @@
+[
+  {
+    "id": "2044802839709372798",
+    "url": "https://x.com/mattpocockuk/status/2044802839709372798",
+    "author": "Matt Pocock",
+    "author_handle": "mattpocockuk",
+    "text": "Quick PSA about Opus 4.7:\n\nAnthropic have raised the default effort of Claude Code from medium to xhigh.\n\nThis will likely burn more tokens by default.\n\nSwitch off the defaults and experiment to see what effort level suits your work best.",
+    "timestamp": "2026-04-16T15:39:22.000Z",
+    "timestamp_raw": "8h",
+    "replies": 22,
+    "reposts": 24,
+    "likes": 270,
+    "image_urls": [
+      "https://pbs.twimg.com/profile_images/1666460461884211204/SmBm505D_normal.jpg?format=jpg&name=large",
+      "https://pbs.twimg.com/media/HGCY0hka8AIZMiT?format=jpg&name=large"
+    ],
+    "video_url": "",
+    "image_content": [
+      "[download failed]",
+      "[OCR error: No module named 'pytesseract']"
+    ],
+    "comments": [
+      {
+        "author": "Matt Pocock",
+        "author_handle": "mattpocockuk",
+        "text": "Quick PSA about Opus 4.7:\n\nAnthropic have raised the default effort of Claude Code from medium to xhigh.\n\nThis will likely burn more tokens by default.\n\nSwitch off the defaults and experiment to see what effort level suits your work best.",
+        "timestamp": "2026-04-16T15:39:22.000Z"
+      },
+      {
+        "author": "Hariharan S",
+        "author_handle": "h2s79",
+        "text": "Oh god looks like a pattern\nMake it high or xhigh\nWhen new model is about to release make it medium. Ppl have to find it tucked away in release notes somewhere. When ppl complain of models getting nerfed “oh but based on user feedback we changed it” it is in release notes",
+        "timestamp": "2026-04-16T16:21:58.000Z"
+      },
+      {
+        "author": "ben",
+        "author_handle": "CalmCoding",
+        "text": "Question, are all the benchmarks they release based on a constant effort level?",
+        "timestamp": "2026-04-16T15:56:14.000Z"
+      },
+      {
+        "author": "Dgrootonis",
+        "author_handle": "iamgroot11",
+        "text": "So waste tokens trying to get the answer you’re looking for. Makes sense.",
+        "timestamp": "2026-04-16T16:02:28.000Z"
+      },
+      {
+        "author": "BytePlus",
+        "author_handle": "BytePlusGlobal",
+        "text": "Easy setup. Access advanced coding models, generate, complete & refine code with AI.",
+        "timestamp": ""
+      },
+      {
+        "author": "Boris Cherny",
+        "author_handle": "bcherny",
+        "text": "We've raised rate limits for all subscribers to make up for the increased token usage. Enjoy!",
+        "timestamp": "2026-04-16T17:56:20.000Z"
+      },
+      {
+        "author": "Pavel Buchta",
+        "author_handle": "thepavelbuchta",
+        "text": "xhigh is a scam.\n\nhigh = cheaper and often slightly better in benchmarks\n\nMore thinking doesn’t always equal better results",
+        "timestamp": "2026-04-16T15:43:16.000Z"
+      },
+      {
+        "author": "Jonathan Riche",
+        "author_handle": "RicheTechGuy",
+        "text": "And its also confusing b/c when you open effort i see the Welcome to opus 4.7 xhigh but my efforts set to high (made me think i was on xhigh even tho defautl is high)",
+        "timestamp": "2026-04-16T15:51:53.000Z"
+      },
+      {
+        "author": "Silvan Kübler",
+        "author_handle": "Sirofjelly",
+        "text": "or just dont use sloppy claud code ;)",
+        "timestamp": "2026-04-16T16:35:53.000Z"
+      },
+      {
+        "author": "Thet Hmuu",
+        "author_handle": "thethmuu_",
+        "text": "Matt, I always hoped you teach using Codex instead of Claude Code. Arguably that will improve the outcome a lot when combined with all your decent techniques.",
+        "timestamp": "2026-04-16T18:29:53.000Z"
+      },
+      {
+        "author": "Dimitri Gilbert",
+        "author_handle": "DimitriGilbert",
+        "text": "wow, they have done absolutely everything right for this release...",
+        "timestamp": "2026-04-16T15:56:55.000Z"
+      },
+      {
+        "author": "Karim C",
+        "author_handle": "BrandGrowthOS",
+        "text": "been watching my usage since the update. definitely seeing 20-30% higher token burns on basic refactoring tasks. the output quality bump is real though",
+        "timestamp": "2026-04-16T21:05:04.000Z"
+      },
+      {
+        "author": "Steve Korshakov",
+        "author_handle": "Ex3NDR",
+        "text": "jfc xhigh is so much worse than high simply because it starts to lean to distribution of training data instead of your code",
+        "timestamp": "2026-04-16T17:31:24.000Z"
+      },
+      {
+        "author": "Peter Cruckshank",
+        "author_handle": "PeteCapeCod",
+        "text": "I'm always playing with the effort shifter. IDK how people can just set it and forget it. \nLike Opus high for git stuff",
+        "timestamp": "2026-04-16T16:26:43.000Z"
+      },
+      {
+        "author": "Dennison",
+        "author_handle": "DennisonBertram",
+        "text": "This is what we get for complaining about it being dumb all the time. :-)",
+        "timestamp": "2026-04-16T15:46:33.000Z"
+      },
+      {
+        "author": "Dave | Solo Dev",
+        "author_handle": "ModernGrindTech",
+        "text": "noticed this yesterday, blew through a daily budget by noon before i caught it. dropped default to medium for refactors, kept xhigh for debugging gnarly stuff. good shout",
+        "timestamp": "2026-04-16T16:15:39.000Z"
+      },
+      {
+        "author": "Everlier",
+        "author_handle": "Everlier",
+        "text": "Very valid note. But there was also mention that reasoning effort is now more tightly correlated with verbosity. Granted how constrained they are on infrasturcture, it might be comparable to previous defaults.",
+        "timestamp": "2026-04-16T16:19:51.000Z"
+      },
+      {
+        "author": "aira",
+        "author_handle": "airasentia",
+        "text": "Changing the default effort is basically a pricing change. Users just feel it later when five prompts suddenly nuke their usage.",
+        "timestamp": "2026-04-16T18:37:21.000Z"
+      },
+      {
+        "author": "Priyanka Pudi",
+        "author_handle": "priyankapudi",
+        "text": "plan to burn more tokens !!",
+        "timestamp": "2026-04-16T16:21:43.000Z"
+      },
+      {
+        "author": "andy",
+        "author_handle": "1a1n1d1y",
+        "text": "are you complaining or something matt",
+        "timestamp": "2026-04-16T18:54:01.000Z"
+      },
+      {
+        "author": "Mr Niewiadomski",
+        "author_handle": "MrNiewiadomski",
+        "text": "I don't see that switch in Claude Code Desktop anymore.",
+        "timestamp": "2026-04-16T17:12:04.000Z"
+      },
+      {
+        "author": "Constantin",
+        "author_handle": "constantout",
+        "text": "Sneaky!",
+        "timestamp": "2026-04-16T15:41:53.000Z"
+      }
+    ],
+    "scraped_at": "2026-04-17T00:00:30.884116"
+  },
+  {
+    "id": "2044813561613185408",
+    "url": "https://x.com/h2s79/status/2044813561613185408",
+    "author": "Hariharan S",
+    "author_handle": "h2s79",
+    "text": "Oh god looks like a pattern\nMake it high or xhigh\nWhen new model is about to release make it medium. Ppl have to find it tucked away in release notes somewhere. When ppl complain of models getting nerfed “oh but based on user feedback we changed it” it is in release notes",
+    "timestamp": "2026-04-16T16:21:58.000Z",
+    "timestamp_raw": "7h",
+    "replies": 0,
+    "reposts": 0,
+    "likes": 0,
+    "image_urls": [
+      "https://pbs.twimg.com/profile_images/2845783007/89826b0354e16c9ebc00d8f95c7abd80_normal.jpeg?format=jpg&name=large"
+    ],
+    "video_url": "",
+    "image_content": [
+      "[download failed]"
+    ],
+    "comments": [
+      {
+        "author": "Matt Pocock",
+        "author_handle": "mattpocockuk",
+        "text": "Quick PSA about Opus 4.7:\n\nAnthropic have raised the default effort of Claude Code from medium to xhigh.\n\nThis will likely burn more tokens by default.\n\nSwitch off the defaults and experiment to see what effort level suits your work best.",
+        "timestamp": "2026-04-16T15:39:22.000Z"
+      },
+      {
+        "author": "Hariharan S",
+        "author_handle": "h2s79",
+        "text": "Oh god looks like a pattern\nMake it high or xhigh\nWhen new model is about to release make it medium. Ppl have to find it tucked away in release notes somewhere. When ppl complain of models getting nerfed “oh but based on user feedback we changed it” it is in release notes",
+        "timestamp": "2026-04-16T16:21:58.000Z"
+      }
+    ],
+    "scraped_at": "2026-04-17T00:00:47.638960"
+  }
+]
