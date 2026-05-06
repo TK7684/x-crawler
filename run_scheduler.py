@@ -20,6 +20,7 @@ Usage:
 import json
 import os
 import random
+import signal
 import subprocess
 import sys
 import time
@@ -40,12 +41,12 @@ BASE_DIR = Path(__file__).parent
 DATA_DIR = BASE_DIR / "data"
 LOG_FILE = BASE_DIR / "scheduler.log"
 
-MAX_SCRAPES_PER_DAY = 8
-MIN_INTERVAL_MIN = 30
-MAX_INTERVAL_MIN = 180
-BREAK_EVERY_N = 3
-BREAK_MIN_MIN = 60
-BREAK_MAX_MIN = 180
+MAX_SCRAPES_PER_DAY = 90
+MIN_INTERVAL_MIN = 15
+MAX_INTERVAL_MIN = 90
+BREAK_EVERY_N = 15
+BREAK_MIN_MIN = 15
+BREAK_MAX_MIN = 30
 QUIET_START = 2
 QUIET_END = 5
 
@@ -83,7 +84,8 @@ def run_scraper(target_url):
     cmd = [str(venv_python), str(scraper),
            "--url", target_url, "--headless",
            "--limit", str(limit),
-           "--replies", "--images", "--export", "json"]
+           "--replies", "--images", "--export", "json",
+           "--auto-comment", "--max-auto-comments", "5"]
 
     if known:
         known_file = tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False, dir=str(BASE_DIR))
@@ -160,7 +162,16 @@ def scrape_one():
         log(f"⏸️ Daily limit ({MAX_SCRAPES_PER_DAY})")
         return False
 
-    picked = crawler_db.pick_next_source("twitter", host=os.environ.get("CRAWLER_HOST"))
+    # Adaptive picker (TrendRadar/NewsNow pattern, 2026-04-21): per-source cooldown
+    # multiplied by health — dry/errored sources drift back, healthy stay eligible.
+    try:
+        import adaptive_cooldown  # /home/tk578/crawlers/ added to sys.path above
+        picked = adaptive_cooldown.pick_next_source_adaptive(
+            "twitter", host=os.environ.get("CRAWLER_HOST")
+        )
+    except Exception as _e:
+        log(f"  ⚠️ Adaptive picker failed ({_e}); falling back to base picker")
+        picked = crawler_db.pick_next_source("twitter", host=os.environ.get("CRAWLER_HOST"))
     if not picked:
         log("⚠️ No targets available")
         return False
@@ -199,19 +210,33 @@ def run_daemon():
     log(f"   Interval: {MIN_INTERVAL_MIN}-{MAX_INTERVAL_MIN} min")
     log(f"   Quiet hours: {QUIET_START}-{QUIET_END} AM")
 
+    def signal_handler(signum, frame):
+        """Handle SIGTERM and KeyboardInterrupt gracefully."""
+        sig_name = signal.Signals(signum).name if signum else "KeyboardInterrupt"
+        log(f"🛑 {sig_name} received — clean shutdown")
+        sys.exit(0)
+
+    # Register signal handlers for graceful shutdown
+    signal.signal(signal.SIGTERM, signal_handler)
+    signal.signal(signal.SIGINT, signal_handler)
+
     session_count = 0
-    while True:
-        if scrape_one():
-            session_count += 1
+    try:
+        while True:
+            if scrape_one():
+                session_count += 1
 
-            if should_take_break(session_count):
-                break_min = random.randint(BREAK_MIN_MIN, BREAK_MAX_MIN)
-                log(f"  🛑 Long break ({break_min} min)")
-                time.sleep(break_min * 60)
+                if should_take_break(session_count):
+                    break_min = random.randint(BREAK_MIN_MIN, BREAK_MAX_MIN)
+                    log(f"  🛑 Long break ({break_min} min)")
+                    time.sleep(break_min * 60)
 
-        interval = random.randint(MIN_INTERVAL_MIN, MAX_INTERVAL_MIN) * 60
-        log(f"  ⏳ Next scrape in {interval // 60} min")
-        time.sleep(interval)
+            interval = random.randint(MIN_INTERVAL_MIN, MAX_INTERVAL_MIN) * 60
+            log(f"  ⏳ Next scrape in {interval // 60} min")
+            time.sleep(interval)
+    except KeyboardInterrupt:
+        log("🛑 KeyboardInterrupt — clean shutdown")
+        sys.exit(0)
 
 
 def main():
