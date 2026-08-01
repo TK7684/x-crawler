@@ -103,11 +103,19 @@ def run_scraper(target_url):
         if known_file:
             Path(known_file.name).unlink(missing_ok=True)
 
+    # NOTE: Python 3.12 + Playwright can emit "RuntimeError: Event loop is closed"
+    # during GC of subprocess transports AFTER data has been written. This is
+    # cosmetic — the scraper produces output before crashing on interpreter
+    # shutdown. So we check for data files regardless of exit code.
     if result.returncode != 0:
-        log(f"  ❌ Error: {result.stderr[-500:]}")
-        return []
+        # Only log as genuine error if it's NOT the known cosmetic event-loop issue
+        stderr_tail = result.stderr[-500:] if result.stderr else ""
+        if "Event loop is closed" not in stderr_tail:
+            log(f"  ❌ Error (rc={result.returncode}): {stderr_tail}")
+        else:
+            log(f"  ⚠️ Scraper exit {result.returncode} (cosmetic event-loop shutdown) — checking output...")
 
-    # Find latest JSON in target dir
+    # Find latest JSON in target dir (check even on non-zero exit — data may exist)
     target = target_url.rstrip("/").split("/")[-1]
     target_dir = DATA_DIR / target
     if not target_dir.exists():
@@ -119,7 +127,7 @@ def run_scraper(target_url):
             continue
         try:
             data = json.load(f.open())
-            if isinstance(data, list):
+            if isinstance(data, list) and data:
                 return data
         except:
             continue

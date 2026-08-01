@@ -14,6 +14,7 @@ Usage:
 
 import asyncio
 import json
+import os
 import random
 import re
 import subprocess
@@ -23,10 +24,20 @@ import urllib.request
 from datetime import datetime
 from pathlib import Path
 
+sys.path.insert(0, "/home/tk578/crawlers")
+from vision_analyze import analyze_image as zai_analyze_image
+
 from playwright.async_api import async_playwright
 
 DATA_DIR = Path(__file__).parent / "data"
-SESSION_FILE = Path(__file__).parent / "session.json"
+SESSION_INDEX = int(os.environ.get("X_SESSION_INDEX", "0"))
+SESSION_FILE = Path(__file__).parent / f"session_{SESSION_INDEX}.json"
+
+
+class RateLimitError(Exception):
+    """Raised when X returns 429/403 or a rate-limit page. Recoverable —
+    daemon should skip this target and let adaptive_cooldown extend backoff."""
+    pass
 
 STEALTH_JS = """
 // Core: hide webdriver
@@ -197,7 +208,7 @@ async def create_browser(headless=False):
         headless=headless,
         args=args,
     )
-    ctx = await browser.new_context(
+    context_args = dict(
         viewport={"width": 1280, "height": 800},
         user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36",
         locale="en-US", timezone_id="Asia/Bangkok",
@@ -209,6 +220,10 @@ async def create_browser(headless=False):
         bypass_csp=True,
         java_script_enabled=True,
     )
+    proxy_url = os.environ.get("X_PROXY")
+    if proxy_url:
+        context_args["proxy"] = {"server": proxy_url}
+    ctx = await browser.new_context(**context_args)
     if SESSION_FILE.exists():
         await ctx.add_cookies(json.loads(SESSION_FILE.read_text()))
         print("✅ Loaded saved session")
@@ -240,12 +255,31 @@ async def do_login(page):
 
 # ── Scraping ────────────────────────────────────────────────────────
 
-async def scrape_target(page, target_url, limit=50, do_replies=True, do_images=True, known_ids=None):
+async def scrape_target(page, target_url, limit=50, do_replies=True, do_images=True,
+                        known_ids=None, auto_comment=False, max_auto_comments=5):
     """Scrape posts from a profile, list, or search page.
     If known_ids is provided, stops early after consecutive known posts."""
     print(f"\n📡 Navigating to: {target_url}")
-    await page.goto(target_url)
+    response = await page.goto(target_url)
     await random_delay(4, 7)
+
+    # ── Rate-limit detection ────────────────────────────────────────
+    # X may respond with HTTP 429 / 403 or render a "rate limit" page
+    # without a non-200 status. Detect both — log clearly, skip target,
+    # raise recoverable RateLimitError so adaptive_cooldown extends backoff.
+    if response is not None and response.status in (429, 403):
+        print(f"\n🚨 Rate limit detected: HTTP {response.status} on {target_url}")
+        raise RateLimitError(f"HTTP {response.status} from {target_url}")
+
+    try:
+        _body = await page.evaluate("() => (document.body && document.body.innerText) || ''")
+    except Exception:
+        _body = ""
+    _body_lo = _body[:2000].lower()
+    for _marker in ("rate limit exceeded", "try again later", "too many requests"):
+        if _marker in _body_lo:
+            print(f"\n🚨 Rate limit detected: '{_marker}' in page body of {target_url}")
+            raise RateLimitError(f"Page text '{_marker}' from {target_url}")
 
     try:
         await page.wait_for_selector('article', timeout=15000)
@@ -258,6 +292,10 @@ async def scrape_target(page, target_url, limit=50, do_replies=True, do_images=T
     seen_ids = set()
     stale = 0
     consecutive_known = 0
+    auto_reply_count = 0
+
+    if auto_comment:
+        print(f"🤖 Auto-comment enabled (max {max_auto_comments})")
 
     print(f"🎯 Target: {limit} posts ({len(known_ids)} already known)\n")
 
@@ -455,6 +493,20 @@ async def scrape_target(page, target_url, limit=50, do_replies=True, do_images=T
             cm = f" [{len(comments)} replies]" if comments else ""
             print(f"  [{n}/{limit}] @{author_handle or '?'}{ic}{cm}: {preview}")
 
+            # ── Auto-comment engagement ──
+            if auto_comment and auto_reply_count < max_auto_comments:
+                trigger = detect_engagement_trigger(text)
+                if trigger and tweet_url:
+                    print(f"  🤖 Engagement trigger detected: '{trigger}' — auto-replying...")
+                    success = await auto_engage_reply(page, tweet_url, trigger)
+                    if success:
+                        auto_reply_count += 1
+                        print(f"  ✅ Auto-reply #{auto_reply_count}/{max_auto_comments} sent")
+                    else:
+                        print(f"  ❌ Auto-reply failed")
+                    # Random delay between auto-replies (8-20s)
+                    await asyncio.sleep(random.uniform(8, 20))
+
             await random_delay(0.3, 0.8)
 
         await human_scroll(page)
@@ -468,6 +520,8 @@ async def scrape_target(page, target_url, limit=50, do_replies=True, do_images=T
             stale = 0
 
     print(f"\n✅ Collected {len(posts)} posts")
+    if auto_comment:
+        print(f"🤖 Auto-replies sent: {auto_reply_count}")
     return posts
 
 
@@ -487,18 +541,65 @@ async def get_full_tweet_text(page, tweet_url):
         pass
     return full_text
 
-async def scrape_replies(page, tweet_url, max_replies=30):
-    """Open a tweet and scrape replies."""
+async def scrape_replies(page, tweet_url, max_replies=100):
+    """Open a tweet and scrape replies, including nested/threaded replies."""
     replies = []
     try:
         await page.goto(tweet_url)
         await random_delay(2, 4)
 
-        # Scroll to load replies
-        for _ in range(3):
+        # Scroll to load replies (increased from 3 to 8)
+        for _ in range(8):
             await human_scroll(page)
             await random_delay(1, 2)
 
+        # Click "Show more replies" / "Show this thread" buttons up to 15 times
+        expand_texts = [
+            "Show more replies",
+            "Show this thread",
+            "Show additional replies",
+        ]
+        for _ in range(15):
+            clicked = False
+            for etxt in expand_texts:
+                try:
+                    btn = await page.query_selector(f'span:has-text("{etxt}")')
+                    if not btn:
+                        btn = await page.query_selector(f'div[role="button"]:has-text("{etxt}")')
+                    if btn:
+                        await btn.click()
+                        await random_delay(1, 2)
+                        clicked = True
+                        break
+                except:
+                    continue
+            if not clicked:
+                break
+
+        # Also try clicking generic "Show" / expand buttons
+        for _ in range(10):
+            try:
+                expand_btns = await page.query_selector_all('div[role="button"]')
+                clicked_any = False
+                for btn in expand_btns:
+                    txt = (await safe_text(btn)).lower()
+                    if any(kw in txt for kw in ['show more', 'show replies', 'show this thread',
+                                                  'show additional', 'more replies']):
+                        await btn.click()
+                        await random_delay(1, 2)
+                        clicked_any = True
+                        break
+                if not clicked_any:
+                    break
+            except:
+                break
+
+        # Scroll again after expanding
+        for _ in range(3):
+            await human_scroll(page)
+            await random_delay(0.5, 1)
+
+        # Collect top-level replies
         articles = await page.query_selector_all('article')
         for article in articles[:max_replies]:
             try:
@@ -527,13 +628,64 @@ async def scrape_replies(page, tweet_url, max_replies=30):
                         reply_time = await safe_attr(time_el, "datetime") or await safe_text(time_el) or ""
                 except:
                     pass
+
                 if text:
-                    replies.append({
+                    # Check for nested "Show replies" / "X replies" button within this reply
+                    nested_replies = []
+                    try:
+                        # Look for nested reply indicators within the article's parent cell
+                        parent_cell = article.evaluate_handle("el => el.closest('div[data-testid]') || el.parentElement")
+                        if parent_cell:
+                            nested_btns = await page.query_selector_all('div[role="button"]')
+                            for nbtn in nested_btns:
+                                ntxt = (await safe_text(nbtn)).lower()
+                                # Match patterns like "3 replies", "Show replies", "1 reply"
+                                if re.match(r'\d+\s+repl(?:y|ies)', ntxt) or 'show replies' in ntxt:
+                                    try:
+                                        await nbtn.click()
+                                        await random_delay(1, 2)
+                                        # Collect nested sub-replies that appear
+                                        sub_articles = await page.query_selector_all('article')
+                                        for sub in sub_articles:
+                                            try:
+                                                sub_user = await sub.query_selector('[data-testid="User-Name"]')
+                                                sub_author = ""
+                                                sub_handle = ""
+                                                if sub_user:
+                                                    sub_links = await sub_user.query_selector_all('a')
+                                                    for sl in sub_links:
+                                                        shref = await safe_attr(sl, "href")
+                                                        stxt = await safe_text(sl)
+                                                        if shref:
+                                                            sub_handle = shref.rstrip('/').split('/')[-1]
+                                                        if stxt and not is_x_noise(stxt):
+                                                            sub_author = stxt
+                                                            break
+                                                sub_text_el = await sub.query_selector('[data-testid="tweetText"]')
+                                                sub_text = await safe_text(sub_text_el) if sub_text_el else ""
+                                                if sub_text:
+                                                    nested_replies.append({
+                                                        "author": sub_author,
+                                                        "author_handle": sub_handle,
+                                                        "text": sub_text,
+                                                    })
+                                            except:
+                                                continue
+                                        break  # Only click first matching nested button
+                                    except:
+                                        continue
+                    except:
+                        pass
+
+                    reply_data = {
                         "author": author,
                         "author_handle": handle,
                         "text": text,
                         "timestamp": reply_time,
-                    })
+                    }
+                    if nested_replies:
+                        reply_data["nested_replies"] = nested_replies
+                    replies.append(reply_data)
             except:
                 continue
     except:
@@ -564,30 +716,112 @@ def download_x_file(url, timeout=15):
 
 
 def analyze_single_x_image(url):
+    """Download image and analyze using ZAI Vision API."""
     path = download_x_file(url)
     if not path:
         return f"[download failed]"
     try:
-        import pytesseract
-        from PIL import Image
-        img = Image.open(path)
-        text = pytesseract.image_to_string(img, lang='tha+eng').strip()
-        if text:
-            return f"OCR: {text[:300]}"
-        return "[image: no text detected]"
+        result = zai_analyze_image(path)
+        if result:
+            return f"Vision: {result[:500]}"
+        return "[image: no content detected]"
     except Exception as e:
-        return f"[OCR error: {str(e)[:60]}]"
+        return f"[Vision error: {str(e)[:60]}]"
     finally:
         try: Path(path).unlink()
         except: pass
 
 
 def analyze_image_urls(urls):
-    """Fallback: use external vision_analyze.py if it exists."""
+    """Analyze image URLs using ZAI Vision API."""
     results = []
     for url in urls[:3]:
         results.append(analyze_single_x_image(url))
     return [r for r in results if r]
+
+
+# ── Engagement Detection ────────────────────────────────────────────
+
+def detect_engagement_trigger(text):
+    """Detect engagement triggers in tweet text (comment/reply/retweet prompts).
+    Returns the keyword to reply with, or None."""
+    if not text:
+        return None
+    patterns = [
+        r"[Cc]omment\s+['\"]([^'\"]+)['\"]",            # Comment 'WORD'
+        r"[Rr]eply\s+['\"]([^'\"]+)['\"]",               # Reply 'WORD'
+        r"[Rr]etweet\s+and\s+[Rr]eply\s+['\"]?([^'\"\n,]+?)['\"]?(?:\s+for|\s*$)",  # retweet and reply X
+        r"[Rr]eply\s+['\"]?([^'\"\n,]+?)['\"]?(?:\s+for|\s+to)",  # reply X for...
+        r"[Qq]uote\s+[Tt]weet\s+['\"]([^'\"]+)['\"]",    # quote tweet 'WORD'
+        r"[Rr]eply\s+with\s+['\"]([^'\"]+)['\"]",         # reply with 'WORD'
+        r"[Cc]omment\s+['\"]?([^'\"\n,]+?)['\"]?(?:\s+for|\s+to|\s*$)",  # comment X for...
+    ]
+    for pattern in patterns:
+        m = re.search(pattern, text)
+        if m:
+            keyword = m.group(1).strip()
+            if keyword:
+                return keyword
+    return None
+
+
+async def auto_engage_reply(page, tweet_url, keyword):
+    """Auto-reply to a tweet with the given keyword.
+    Returns True if successful, False otherwise."""
+    try:
+        # Navigate to the tweet
+        await page.goto(tweet_url, wait_until="domcontentloaded", timeout=15000)
+        await random_delay(2, 4)
+
+        # Click the reply button (data-testid="reply")
+        reply_btn = await page.query_selector('[data-testid="reply"]')
+        if not reply_btn:
+            # Fallback: click reply textarea
+            reply_btn = await page.query_selector('[data-testid="tweetTextarea_0"]')
+            if not reply_btn:
+                reply_btn = await page.query_selector('[placeholder*="Reply"]')
+
+        if not reply_btn:
+            print("    ⚠️ Could not find reply button")
+            return False
+
+        await reply_btn.click()
+        await random_delay(1, 2)
+
+        # Find and focus the reply textarea
+        reply_box = await page.query_selector('[data-testid="tweetTextarea_0"]')
+        if not reply_box:
+            reply_box = await page.query_selector('[contenteditable="true"][role="textbox"]')
+        if not reply_box:
+            print("    ⚠️ Could not find reply textbox")
+            return False
+
+        await reply_box.click()
+        await random_delay(0.3, 0.6)
+
+        # Type the keyword
+        await page.keyboard.type(keyword, delay=random.randint(30, 80))
+        await random_delay(0.5, 1)
+
+        # Click the send/reply button
+        send_btn = await page.query_selector('[data-testid="tweetButtonInline"]')
+        if not send_btn:
+            send_btn = await page.query_selector('[data-testid="tweetButton"]')
+        if not send_btn:
+            # Fallback: look for button with "Reply" or "Post" text
+            send_btn = await page.query_selector('div[role="button"][data-testid="tweetButton"]')
+
+        if not send_btn:
+            print("    ⚠️ Could not find send button")
+            return False
+
+        await send_btn.click()
+        await random_delay(2, 4)
+
+        return True
+    except Exception as e:
+        print(f"    ⚠️ Auto-reply error: {str(e)[:80]}")
+        return False
 
 
 # ── Export ──────────────────────────────────────────────────────────
@@ -660,10 +894,13 @@ async def main():
     parser.add_argument("--images", action="store_true", help="Analyze images")
     parser.add_argument("--known-ids-file", type=str, help="JSON file with known tweet IDs to skip")
     parser.add_argument("--export", choices=["json", "markdown", "both"], default="both")
+    parser.add_argument("--auto-comment", action="store_true", help="Enable auto-reply on engagement triggers")
+    parser.add_argument("--max-auto-comments", type=int, default=5, help="Max auto-replies per session (default: 5)")
     args = parser.parse_args()
 
     pw, browser, ctx, page = await create_browser(headless=args.headless)
 
+    rate_limited = False
     try:
         if args.login:
             if await do_login(page):
@@ -688,7 +925,9 @@ async def main():
 
         posts = await scrape_target(page, args.url, limit=args.limit,
                                      do_replies=args.replies, do_images=args.images,
-                                     known_ids=known_ids)
+                                     known_ids=known_ids,
+                                     auto_comment=args.auto_comment,
+                                     max_auto_comments=args.max_auto_comments)
 
         if posts:
             # Extract target name from URL
@@ -703,6 +942,9 @@ async def main():
             await save_session(ctx)
             print(f"\n🎉 {len(posts)} posts → {target_dir}/")
 
+    except RateLimitError as e:
+        print(f"\n🚨 Rate limited: {e} — skipping target, signaling cooldown extension")
+        rate_limited = True
     except KeyboardInterrupt:
         print("\n⚠️ Interrupted")
     except Exception as e:
@@ -713,7 +955,30 @@ async def main():
         await ctx.close()
         await browser.close()
         await pw.stop()
+    if rate_limited:
+        sys.exit(42)
+
+
+def _silence_event_loop_closed():
+    """Patch asyncio subprocess transports to suppress cosmetic
+    'Event loop is closed' errors on Python 3.12+ GC during shutdown.
+    The error fires in BaseSubprocessTransport.__del__ AFTER all work
+    is complete — it's harmless noise that corrupts our exit code."""
+    try:
+        from asyncio.base_subprocess import BaseSubprocessTransport
+        orig_del = BaseSubprocessTransport.__del__
+
+        def _patched_del(self):
+            try:
+                orig_del(self)
+            except RuntimeError:
+                pass
+
+        BaseSubprocessTransport.__del__ = _patched_del
+    except Exception:
+        pass
 
 
 if __name__ == "__main__":
+    _silence_event_loop_closed()
     asyncio.run(main())
